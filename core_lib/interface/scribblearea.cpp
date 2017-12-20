@@ -892,6 +892,8 @@ void ScribbleArea::updateCanvasCursor()
 
 void ScribbleArea::paintEvent(QPaintEvent* event)
 {
+	qDebug() << "--paintEvent" << event->rect();
+
     if (!mMouseInUse || currentTool()->type() == MOVE || currentTool()->type() == HAND || mMouseRightButtonInUse)
     {
         // --- we retrieve the canvas from the cache; we create it if it doesn't exist
@@ -905,7 +907,7 @@ void ScribbleArea::paintEvent(QPaintEvent* event)
             drawCanvas(mEditor->currentFrame(), event->rect());
 
             mPixmapCacheKeys[frameNumber] = QPixmapCache::insert(mCanvas);
-            //qDebug() << "Repaint canvas!";
+            qDebug() << "  -- Repaint canvas!";
         }
     }
 
@@ -1057,7 +1059,7 @@ void ScribbleArea::paintEvent(QPaintEvent* event)
     // outlines the frame of the viewport
 #ifdef _DEBUG
     painter.setWorldMatrixEnabled(false);
-    painter.setPen(QPen(Qt::gray, 2));
+    painter.setPen(QPen(Qt::gray, 5));
     painter.setBrush(Qt::NoBrush);
     painter.drawRect(QRect(0, 0, width(), height()));
 #endif
