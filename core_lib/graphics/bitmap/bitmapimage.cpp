@@ -84,7 +84,7 @@ BitmapImage* BitmapImage::clone()
 
 void BitmapImage::paintImage(QPainter& painter)
 {
-    painter.drawImage(topLeft(), *mImage);
+    painter.drawImage(topLeft(), *image());
 }
 
 void BitmapImage::paintImage(QPainter& painter, QImage& image, QRect sourceRect, QRect destRect)
@@ -96,14 +96,14 @@ void BitmapImage::paintImage(QPainter& painter, QImage& image, QRect sourceRect,
 
 BitmapImage BitmapImage::copy()
 {
-    return BitmapImage(mBounds, QImage(*mImage));
+    return BitmapImage(mBounds, *image());
 }
 
 BitmapImage BitmapImage::copy(QRect rectangle)
 {
     //QRect intersection = boundaries.intersected( rectangle );
     QRect intersection2 = rectangle.translated(-topLeft());
-    BitmapImage result = BitmapImage(rectangle, mImage->copy(intersection2));
+    BitmapImage result = BitmapImage(rectangle, image()->copy(intersection2));
     return result;
 }
 
@@ -115,7 +115,7 @@ void BitmapImage::paste(BitmapImage* bitmapImage)
 void BitmapImage::paste(BitmapImage* bitmapImage, QPainter::CompositionMode cm)
 {
     QRect newBoundaries;
-    if (mImage->width() == 0 || mImage->height() == 0)
+    if (image()->width() == 0 || image()->height() == 0)
     {
         newBoundaries = bitmapImage->mBounds;
     }
@@ -127,7 +127,7 @@ void BitmapImage::paste(BitmapImage* bitmapImage, QPainter::CompositionMode cm)
 
     QImage* image2 = bitmapImage->image();
 
-    QPainter painter(mImage.get());
+    QPainter painter(image());
     painter.setCompositionMode(cm);
     painter.drawImage(bitmapImage->mBounds.topLeft() - mBounds.topLeft(), *image2);
     painter.end();
@@ -138,7 +138,7 @@ void BitmapImage::add(BitmapImage* bitmapImage)
     QImage* image2 = bitmapImage->image();
 
     QRect newBoundaries;
-    if (mImage->width() == 0 || mImage->height() == 0)
+    if (image()->width() == 0 || image()->height() == 0)
     {
         newBoundaries = bitmapImage->mBounds;
     }
@@ -152,7 +152,7 @@ void BitmapImage::add(BitmapImage* bitmapImage)
     {
         for (int x = 0; x < image2->width(); x++)
         {
-            QRgb p1 = mImage->pixel(offset.x() + x, offset.y() + y);
+            QRgb p1 = image()->pixel(offset.x() + x, offset.y() + y);
             QRgb p2 = image2->pixel(x, y);
 
             int a1 = qAlpha(p1);
@@ -184,7 +184,7 @@ void BitmapImage::compareAlpha(BitmapImage* bitmapImage) // this function picks 
     QImage* image2 = bitmapImage->image();
 
     QRect newBoundaries;
-    if (mImage->width() == 0 || mImage->height() == 0)
+    if (image()->width() == 0 || image()->height() == 0)
     {
         newBoundaries = bitmapImage->mBounds;
     }
@@ -198,7 +198,7 @@ void BitmapImage::compareAlpha(BitmapImage* bitmapImage) // this function picks 
     {
         for (int x = 0; x < image2->width(); x++)
         {
-            QRgb p1 = mImage->pixel(offset.x() + x, offset.y() + y);
+            QRgb p1 = image()->pixel(offset.x() + x, offset.y() + y);
             QRgb p2 = image2->pixel(x, y);
 
             int a1 = qAlpha(p1);
@@ -207,7 +207,7 @@ void BitmapImage::compareAlpha(BitmapImage* bitmapImage) // this function picks 
             if (a1 <= a2)
             {
                 QRgb mix = qRgba(qRed(p2), qGreen(p2), qBlue(p2), a2);
-                mImage->setPixel(offset.x() + x, offset.y() + y, mix);
+                image()->setPixel(offset.x() + x, offset.y() + y, mix);
             }
         }
     }
@@ -229,7 +229,7 @@ void BitmapImage::transform(QRect newBoundaries, bool smoothTransform)
     painter.setCompositionMode(QPainter::CompositionMode_Source);
     painter.fillRect(newImage->rect(), QColor(0, 0, 0, 0));
     painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
-    painter.drawImage(newBoundaries, *mImage);
+    painter.drawImage(newBoundaries, *image());
     painter.end();
     mImage.reset(newImage);
 }
@@ -259,7 +259,7 @@ BitmapImage BitmapImage::transformed(QRect newBoundaries, bool smoothTransform)
     QPainter painter(transformedImage.image());
     painter.setRenderHint(QPainter::SmoothPixmapTransform, smoothTransform);
     newBoundaries.moveTopLeft(QPoint(0, 0));
-    painter.drawImage(newBoundaries, *mImage);
+    painter.drawImage(newBoundaries, *image());
     painter.end();
     return transformedImage;
 }
@@ -290,7 +290,7 @@ void BitmapImage::extend(QRect rectangle)
         if (!newImage->isNull())
         {
             QPainter painter(newImage);
-            painter.drawImage(mBounds.topLeft() - newBoundaries.topLeft(), *mImage);
+            painter.drawImage(mBounds.topLeft() - newBoundaries.topLeft(), *image());
             painter.end();
         }
         mImage.reset(newImage);
@@ -306,7 +306,8 @@ QRgb BitmapImage::pixel(int x, int y)
 QRgb BitmapImage::pixel(QPoint P)
 {
     QRgb result = qRgba(0, 0, 0, 0); // black
-    if (mBounds.contains(P)) result = mImage->pixel(P - topLeft());
+    if (mBounds.contains(P))
+        result = image()->pixel(P - topLeft());
     return result;
 }
 
@@ -319,8 +320,7 @@ void BitmapImage::setPixel(QPoint P, QRgb colour)
 {
     extend(P);
     if (mBounds.contains(P))
-        mImage->setPixel(P - topLeft(), colour);
-    //drawLine( QPointF(P), QPointF(P), QPen(QColor(colour)), QPainter::CompositionMode_SourceOver, false);
+        image()->setPixel(P - topLeft(), colour);
 }
 
 
@@ -328,9 +328,9 @@ void BitmapImage::drawLine(QPointF P1, QPointF P2, QPen pen, QPainter::Compositi
 {
     int width = 2 + pen.width();
     extend(QRect(P1.toPoint(), P2.toPoint()).normalized().adjusted(-width, -width, width, width));
-    if (mImage != NULL && !mImage->isNull())
+    if (!image()->isNull())
     {
-        QPainter painter(mImage.get());
+        QPainter painter(image());
         painter.setCompositionMode(cm);
         painter.setRenderHint(QPainter::Antialiasing, antialiasing);
         painter.setPen(pen);
@@ -349,9 +349,9 @@ void BitmapImage::drawRect(QRectF rectangle, QPen pen, QBrush brush, QPainter::C
         gradient->setCenter(gradient->center() - topLeft());
         gradient->setFocalPoint(gradient->focalPoint() - topLeft());
     }
-    if (mImage && !mImage->isNull())
+    if (!image()->isNull())
     {
-        QPainter painter(mImage.get());
+        QPainter painter(image());
         painter.setCompositionMode(cm);
         painter.setRenderHint(QPainter::Antialiasing, antialiasing);
         painter.setPen(pen);
@@ -371,15 +371,13 @@ void BitmapImage::drawEllipse(QRectF rectangle, QPen pen, QBrush brush, QPainter
         gradient->setCenter(gradient->center() - topLeft());
         gradient->setFocalPoint(gradient->focalPoint() - topLeft());
     }
-    if (mImage && !mImage->isNull())
+    if (!image()->isNull())
     {
-        QPainter painter(mImage.get());
+        QPainter painter(image());
 
         painter.setRenderHint(QPainter::Antialiasing, antialiasing);
         painter.setPen(pen);
         painter.setBrush(brush);
-        //if (brush == Qt::NoBrush)
-
         painter.setCompositionMode(cm);
         painter.drawEllipse(rectangle.translated(-topLeft()));
 
@@ -391,13 +389,13 @@ void BitmapImage::drawPath(QPainterPath path, QPen pen, QBrush brush,
                            QPainter::CompositionMode cm, bool antialiasing)
 {
     int width = pen.width();
-    qreal inc = 1.0 + width / 20.0; // qreal?
+    qreal inc = 1.0 + width / 20.0;
     //if (inc<1) { inc=1.0; }
     extend(path.controlPointRect().adjusted(-width, -width, width, width).toRect());
 
-    if (mImage != NULL && !mImage->isNull())
+    if (!image()->isNull())
     {
-        QPainter painter(mImage.get());
+        QPainter painter(image());
         painter.setCompositionMode(cm);
         painter.setRenderHint(QPainter::Antialiasing, antialiasing);
         painter.setPen(pen);
@@ -438,22 +436,24 @@ void BitmapImage::clear()
     mBounds = QRect(0, 0, 0, 0);
 }
 
-QRgb BitmapImage::constScanLine(int x, int y) {
+QRgb BitmapImage::constScanLine(int x, int y)
+{
     QRgb result = qRgba(0, 0, 0, 0);
-    if (mBounds.contains(QPoint(x, y))) {
+    if (mBounds.contains(QPoint(x, y)))
+    {
         result = *(reinterpret_cast<const QRgb*>(mImage->constScanLine(y - topLeft().y())) + x - topLeft().x());
     }
-
     return result;
 }
 
 void BitmapImage::scanLine(int x, int y, QRgb colour)
 {
     extend(QPoint(x, y));
-    if (mBounds.contains(QPoint(x, y))) {
+    if (mBounds.contains(QPoint(x, y)))
+    {
 
         // Make sure color is premultiplied before calling
-        *(reinterpret_cast<QRgb*>(mImage->scanLine(y - topLeft().y())) + x - topLeft().x()) =
+        *(reinterpret_cast<QRgb*>(image()->scanLine(y - topLeft().y())) + x - topLeft().x()) =
             qRgba(
                 qRed(colour),
                 qGreen(colour),
@@ -467,7 +467,7 @@ void BitmapImage::clear(QRect rectangle)
     QRect clearRectangle = mBounds.intersected(rectangle);
     clearRectangle.moveTopLeft(clearRectangle.topLeft() - topLeft());
 
-    QPainter painter(mImage.get());
+    QPainter painter(image());
     painter.setCompositionMode(QPainter::CompositionMode_Clear);
     painter.fillRect(clearRectangle, QColor(0, 0, 0, 0));
     painter.end();
@@ -510,12 +510,16 @@ bool BitmapImage::compareColor(QRgb color1, QRgb color2, int tolerance)
 
 // Flood fill
 // ----- http://lodev.org/cgtutor/floodfill.html
-void BitmapImage::floodFill(BitmapImage* targetImage, QRect cameraRect, QPoint point, QRgb oldColor, QRgb newColor, int tolerance)
+void BitmapImage::floodFill(BitmapImage* targetImage,
+                            QRect cameraRect,
+                            QPoint point,
+                            QRgb oldColor,
+                            QRgb newColor,
+                            int tolerance)
 {
-    if (oldColor == newColor) {
+    if (oldColor == newColor)
         return;
-    }
-
+    
     oldColor = targetImage->pixel(point);
     oldColor = qRgba(qRed(oldColor), qGreen(oldColor), qBlue(oldColor), qAlpha(oldColor));
 
@@ -524,10 +528,11 @@ void BitmapImage::floodFill(BitmapImage* targetImage, QRect cameraRect, QPoint p
 
     BitmapImage* replaceImage = nullptr;
     QPoint tempPoint;
-    QRgb newPlacedColor;
+    QRgb newPlacedColor = 0;
 
-    int xTemp;
-    bool spanLeft, spanRight;
+    int xTemp = 0;
+    bool spanLeft = false;
+    bool spanRight = false;
 
     // Extend to size of Camera
     targetImage->extend(cameraRect);
@@ -536,7 +541,8 @@ void BitmapImage::floodFill(BitmapImage* targetImage, QRect cameraRect, QPoint p
     queue.append(point);
     // Preparations END
 
-    while (!queue.empty()) {
+    while (!queue.empty())
+    {
         tempPoint = queue.takeFirst();
 
         point.setX(tempPoint.x());
@@ -552,7 +558,8 @@ void BitmapImage::floodFill(BitmapImage* targetImage, QRect cameraRect, QPoint p
         spanLeft = spanRight = false;
         while (xTemp <= targetImage->right() &&
                compareColor(targetImage->constScanLine(xTemp, point.y()), oldColor, tolerance) &&
-               newPlacedColor != newColor) {
+               newPlacedColor != newColor)
+        {
 
             // Set pixel color
             replaceImage->scanLine(xTemp, point.y(), newColor);
