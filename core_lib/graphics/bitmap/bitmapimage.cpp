@@ -52,12 +52,15 @@ BitmapImage::BitmapImage(const QRect& rectangle, const QImage& image)
 
 BitmapImage::BitmapImage(const QString& path, const QPoint& topLeft)
 {
+    setFileName(path);
+    /*
     mImage = std::make_shared< QImage >(path);
     if (mImage->isNull())
     {
         qDebug() << "ERROR: Image " << path << " not loaded";
     }
-    mBounds = QRect(topLeft, mImage->size());
+    */
+    mBounds = QRect(topLeft, QSize(1,1));
 }
 
 BitmapImage::~BitmapImage()
@@ -92,6 +95,15 @@ void BitmapImage::paintImage(QPainter& painter, QImage& image, QRect sourceRect,
     painter.drawImage(QRect(QPoint(topLeft()), destRect.size()),
                       image,
                       sourceRect);
+}
+
+QImage* BitmapImage::image()
+{
+    if (!mImage)
+    {
+        mImage = std::make_shared< QImage >(fileName());
+    }
+    return mImage.get();
 }
 
 BitmapImage BitmapImage::copy()

@@ -39,7 +39,7 @@ public:
     void paintImage(QPainter& painter);
     void paintImage(QPainter &painter, QImage &image, QRect sourceRect, QRect destRect);
 
-    QImage* image() { return mImage.get(); }
+    QImage* image();
     void    setImage(QImage* pImg);
 
     BitmapImage copy();
