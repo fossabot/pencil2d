@@ -29,7 +29,7 @@ GNU General Public License for more details.
 CanvasPainter::CanvasPainter(QObject* parent) : QObject(parent)
 , mLog("CanvasRenderer")
 {
-    ENABLE_DEBUG_LOG(mLog, false);
+    ENABLE_DEBUG_LOG(mLog, true);
 }
 
 CanvasPainter::~CanvasPainter()
@@ -110,10 +110,11 @@ void CanvasPainter::paintOnionSkin(QPainter& painter)
 {
     Layer* layer = mObject->getLayer(mCurrentLayerIndex);
 
-    if (layer->keyFrameCount() == 0)
-    {
+    if (layer->visible() == false)
         return;
-    }
+
+    if (layer->keyFrameCount() == 0)
+        return;
 
     qreal minOpacity = mOptions.fOnionSkinMinOpacity / 100;
     qreal maxOpacity = mOptions.fOnionSkinMaxOpacity / 100;
@@ -133,8 +134,8 @@ void CanvasPainter::paintOnionSkin(QPainter& painter)
 
             switch (layer->type())
             {
-            case Layer::BITMAP: { paintBitmapFrame(painter, mCurrentLayerIndex, onionFrameNumber, mOptions.bColorizePrevOnion, false); break; }
-            case Layer::VECTOR: { paintVectorFrame(painter, mCurrentLayerIndex, onionFrameNumber, mOptions.bColorizePrevOnion, false); break; }
+            case Layer::BITMAP: { paintBitmapFrame(painter, layer, onionFrameNumber, mOptions.bColorizePrevOnion, false); break; }
+            case Layer::VECTOR: { paintVectorFrame(painter, layer, onionFrameNumber, mOptions.bColorizePrevOnion, false); break; }
             case Layer::CAMERA: break;
             case Layer::SOUND: break;
             default: Q_ASSERT(false); break;
@@ -161,8 +162,8 @@ void CanvasPainter::paintOnionSkin(QPainter& painter)
 
             switch (layer->type())
             {
-            case Layer::BITMAP: { paintBitmapFrame(painter, mCurrentLayerIndex, onionFrameNumber, mOptions.bColorizeNextOnion, false); break; }
-            case Layer::VECTOR: { paintVectorFrame(painter, mCurrentLayerIndex, onionFrameNumber, mOptions.bColorizeNextOnion, false); break; }
+            case Layer::BITMAP: { paintBitmapFrame(painter, layer, onionFrameNumber, mOptions.bColorizeNextOnion, false); break; }
+            case Layer::VECTOR: { paintVectorFrame(painter, layer, onionFrameNumber, mOptions.bColorizeNextOnion, false); break; }
             case Layer::CAMERA: break;
             case Layer::SOUND: break;
             default: Q_ASSERT(false); break;
@@ -176,18 +177,11 @@ void CanvasPainter::paintOnionSkin(QPainter& painter)
 }
 
 void CanvasPainter::paintBitmapFrame(QPainter& painter,
-                                      int layerId,
-                                      int nFrame,
-                                      bool colorize,
-                                      bool useLastKeyFrame)
+                                     Layer* layer,
+                                     int nFrame,
+                                     bool colorize,
+                                     bool useLastKeyFrame)
 {
-    Layer* layer = mObject->getLayer(layerId);
-
-    if (!layer->visible())
-    {
-        return;
-    }
-
     LayerBitmap* bitmapLayer = dynamic_cast<LayerBitmap*>(layer);
     if (bitmapLayer == nullptr)
     {
@@ -235,7 +229,7 @@ void CanvasPainter::paintBitmapFrame(QPainter& painter,
     }
 
     // If the current frame on the current layer has a transformation, we apply it.
-    if (mRenderTransform && nFrame == mFrameNumber && layerId == mCurrentLayerIndex)
+    if (mRenderTransform && nFrame == mFrameNumber /*&& layerId == mCurrentLayerIndex*/) // FIXME:
     {
         paintToImage.clear(mSelection);
         paintTransformedSelection(painter);
@@ -271,18 +265,11 @@ void CanvasPainter::prescale(BitmapImage* bitmapImage)
 }
 
 void CanvasPainter::paintVectorFrame(QPainter& painter,
-                                      int layerId,
-                                      int nFrame,
-                                      bool colorize,
-                                      bool useLastKeyFrame)
+                                     Layer* layer, 
+                                     int nFrame,
+                                     bool colorize,
+                                     bool useLastKeyFrame)
 {
-    Layer* layer = mObject->getLayer(layerId);
-
-    if (!layer->visible())
-    {
-        return;
-    }
-
     LayerVector* vectorLayer = dynamic_cast<LayerVector*>(layer);
     if (vectorLayer == nullptr)
     {
@@ -308,11 +295,8 @@ void CanvasPainter::paintVectorFrame(QPainter& painter,
     QImage* pImage = new QImage(mCanvas->size(), QImage::Format_ARGB32_Premultiplied);
     vectorImage->outputImage(pImage, mViewTransform, mOptions.bOutlines, mOptions.bThinLines, mOptions.bAntiAlias);
 
-
     //painter.drawImage( QPoint( 0, 0 ), *pImage );
-
     // Go through a Bitmap image to paint the onion skin colour
-    //
     BitmapImage* tempBitmapImage = new BitmapImage();
     tempBitmapImage->setImage(pImage);
 
@@ -374,21 +358,25 @@ void CanvasPainter::paintCurrentFrame(QPainter& painter)
     for (int i = 0; i < mObject->getLayerCount(); ++i)
     {
         Layer* layer = mObject->getLayer(i);
+
+        if (layer->visible() == false)
+            continue;
+
         if (i == mCurrentLayerIndex || mOptions.nShowAllLayers != 1)
         {
             painter.setOpacity(1.0);
         }
         else if (!isCamera)
         {
-            painter.setOpacity(0.8);
+            //painter.setOpacity(0.8);
         }
 
         if (i == mCurrentLayerIndex || mOptions.nShowAllLayers > 0)
         {
             switch (layer->type())
             {
-            case Layer::BITMAP: { paintBitmapFrame(painter, i, mFrameNumber); break; }
-            case Layer::VECTOR: { paintVectorFrame(painter, i, mFrameNumber); break; }
+            case Layer::BITMAP: { paintBitmapFrame(painter, layer, mFrameNumber); break; }
+            case Layer::VECTOR: { paintVectorFrame(painter, layer, mFrameNumber); break; }
             case Layer::CAMERA: break;
             case Layer::SOUND: break;
             default: Q_ASSERT(false); break;
