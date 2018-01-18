@@ -53,6 +53,7 @@ BitmapImage::BitmapImage(const QRect& rectangle, const QImage& image)
 BitmapImage::BitmapImage(const QString& path, const QPoint& topLeft)
 {
     setFileName(path);
+    mImage.reset();
     /*
     mImage = std::make_shared< QImage >(path);
     if (mImage->isNull())
@@ -102,6 +103,8 @@ QImage* BitmapImage::image()
     if (!mImage)
     {
         mImage = std::make_shared< QImage >(fileName());
+        mBounds.setSize(mImage->size());
+        qDebug() << "fileName=" << fileName();
     }
     return mImage.get();
 }
