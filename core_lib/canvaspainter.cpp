@@ -326,23 +326,18 @@ void CanvasPainter::paintTransformedSelection(QPainter& painter)
 {
     // Make sure there is something selected
     //
-    if (mSelection.width() == 0 || mSelection.height() == 0) {
+    if (mSelection.width() == 0 || mSelection.height() == 0)
         return;
-    }
 
     Layer* layer = mObject->getLayer(mCurrentLayerIndex);
 
-    if (layer->type() == Layer::BITMAP) {
-
+    if (layer->type() == Layer::BITMAP)
+    {
         // Get the transformed image
-        //
         BitmapImage* bitmapImage = dynamic_cast<LayerBitmap*>(layer)->getLastBitmapImageAtFrame(mFrameNumber, 0);
-
         BitmapImage transformedImage = bitmapImage->transformed(mSelection, mSelectionTransform, mOptions.bAntiAlias);
 
-
         // Paint the transformation output
-        //
         painter.setWorldMatrixEnabled(true);
         transformedImage.paintImage(painter);
     }
@@ -350,22 +345,15 @@ void CanvasPainter::paintTransformedSelection(QPainter& painter)
 
 void CanvasPainter::paintCurrentFrame(QPainter& painter)
 {
-    bool isCamera = mObject->getLayer(mCurrentLayerIndex)->type() == Layer::CAMERA;
+    //bool isCamera = mObject->getLayer(mCurrentLayerIndex)->type() == Layer::CAMERA;
+    painter.setOpacity(1.0);
+
     for (int i = 0; i < mObject->getLayerCount(); ++i)
     {
         Layer* layer = mObject->getLayer(i);
 
         if (layer->visible() == false)
             continue;
-
-        if (i == mCurrentLayerIndex || mOptions.nShowAllLayers != 1)
-        {
-            painter.setOpacity(1.0);
-        }
-        else if (!isCamera)
-        {
-            //painter.setOpacity(0.8);
-        }
 
         if (i == mCurrentLayerIndex || mOptions.nShowAllLayers > 0)
         {
