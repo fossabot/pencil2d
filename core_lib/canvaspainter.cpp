@@ -71,6 +71,8 @@ void CanvasPainter::ignoreTransformedSelection()
 
 void CanvasPainter::paint(const Object* object, int layer, int frame, QRect rect)
 {
+    clock_t t1 = clock();
+
     Q_ASSERT(object);
     mObject = object;
 
@@ -99,6 +101,9 @@ void CanvasPainter::paint(const Object* object, int layer, int frame, QRect rect
     {
         paintAxis(painter);
     }
+
+    clock_t t2 = clock() - t1;
+    qCDebug(mLog, "Draw: %d ms", t2);
 }
 
 void CanvasPainter::paintBackground()

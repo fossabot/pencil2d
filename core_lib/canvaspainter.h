@@ -86,11 +86,13 @@ private:
     void prescale(BitmapImage* bitmapImage);
 
 private:
+    CanvasPainterOptions mOptions;
+
     const Object* mObject = nullptr;
     QPixmap* mCanvas = nullptr;
     QTransform mViewTransform;
     QTransform mViewInverse;
-
+    
     QRect mCameraRect;
 
     int mCurrentLayerIndex = 0;
@@ -100,16 +102,12 @@ private:
 
     bool bMultiLayerOnionSkin = false;
 
-    CanvasPainterOptions mOptions;
-
     // Handle selection transformation
-    //
     bool mRenderTransform = false;
     QRect mSelection;
     QTransform mSelectionTransform;
 
     QLoggingCategory mLog;
-
 };
 
 #endif // CANVASRENDERER_H
