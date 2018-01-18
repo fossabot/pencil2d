@@ -76,8 +76,8 @@ private:
 
     void paintCurrentFrame(QPainter& painter);
 
-    void paintBitmapFrame(QPainter&, Layer* layer, int nFrame, bool colorize = false, bool useLastKeyFrame = true);
-    void paintVectorFrame(QPainter&, Layer* layer, int nFrame, bool colorize = false, bool useLastKeyFrame = true);
+    void paintBitmapFrame(QPainter&, Layer* layer, int nFrame, bool colorize, bool useLastKeyFrame);
+    void paintVectorFrame(QPainter&, Layer* layer, int nFrame, bool colorize, bool useLastKeyFrame);
 
     void paintTransformedSelection(QPainter& painter);
     void paintGrid(QPainter& painter);

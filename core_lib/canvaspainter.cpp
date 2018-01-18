@@ -371,8 +371,8 @@ void CanvasPainter::paintCurrentFrame(QPainter& painter)
         {
             switch (layer->type())
             {
-            case Layer::BITMAP: { paintBitmapFrame(painter, layer, mFrameNumber); break; }
-            case Layer::VECTOR: { paintVectorFrame(painter, layer, mFrameNumber); break; }
+            case Layer::BITMAP: { paintBitmapFrame(painter, layer, mFrameNumber, false, true); break; }
+            case Layer::VECTOR: { paintVectorFrame(painter, layer, mFrameNumber, false, true); break; }
             default: break;
             }
         }
