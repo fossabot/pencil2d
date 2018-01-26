@@ -2,7 +2,7 @@
 
 Pencil - Traditional Animation Software
 Copyright (C) 2005-2007 Patrick Corrieri & Pascal Naidon
-Copyright (C) 2012-2017 Matthew Chiawen Chang
+Copyright (C) 2012-2018 Matthew Chiawen Chang
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -87,6 +87,7 @@ private:
 
     QTimer* mTimer = nullptr;
     QElapsedTimer* mElapsedTimer = nullptr;
+    int mPlayingFrameCounter = 0; // how many frames has passed after pressing play
 
     bool mCheckForSoundsHalfway = false;
     QList<int> mListOfActiveSoundFrames;

@@ -2,7 +2,7 @@
 
 Pencil - Traditional Animation Software
 Copyright (C) 2005-2007 Patrick Corrieri & Pascal Naidon
-Copyright (C) 2012-2017 Matthew Chiawen Chang
+Copyright (C) 2012-2018 Matthew Chiawen Chang
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -233,9 +233,25 @@ void TimeLine::updateUI()
     mLayerList->update();
 }
 
-int TimeLine::getFrameLength()
+int TimeLine::getLength()
 {
     return mTracks->getFrameLength();
+}
+
+void TimeLine::setLength(int frame)
+{
+    mTracks->setFrameLength(frame);
+    updateLength();
+}
+
+void TimeLine::extendLength(int frame)
+{
+    int extendFrame = frame + 10;
+    if (extendFrame > mTracks->getFrameLength())
+    {
+        mTracks->setFrameLength(extendFrame);
+        updateLength();
+    }
 }
 
 void TimeLine::resizeEvent(QResizeEvent*)
@@ -252,39 +268,6 @@ void TimeLine::wheelEvent(QWheelEvent* event)
     else
     {
         mVScrollbar->event(event);
-        /*QPoint numPixels = event->pixelDelta();
-        QPoint numDegrees = event->angleDelta() / 8;
-        int isForward =0;
-        if ( !numPixels.isNull() )
-        {
-            if ( numPixels.ry() > 0 )
-                isForward =1;
-            else if ( numPixels.ry() < 0 )
-                isForward =-1;
-        }
-        else if (!numDegrees.isNull())
-        {
-            if ( numDegrees.ry() > 0 )
-                isForward =1;
-            else if ( numDegrees.ry() < 0 )
-                isForward =-1;
-        }
-
-        if ( isForward > 0 )
-        {
-            mVScrollbar->triggerAction( QAbstractSlider::SliderSingleStepAdd );
-        }
-        else if ( isForward < 0 )
-        {
-            mVScrollbar->triggerAction( QAbstractSlider::SliderSingleStepSub );
-        }
-        else
-        {
-            //Do nothing we've had a wheel event where we are neither going forward or backward
-            //which should never happen?
-        }
-
-        event->accept();*/
     }
 }
 
@@ -337,7 +320,7 @@ void TimeLine::updateLayerNumber(int numberOfLayers)
 
 void TimeLine::updateLength()
 {
-    int frameLength = getFrameLength();
+    int frameLength = getLength();
     mHScrollbar->setMaximum( qMax( 0, frameLength - mTracks->width() / mTracks->getFrameSize() ) );
     mTimeControls->updateLength(frameLength);
     update();

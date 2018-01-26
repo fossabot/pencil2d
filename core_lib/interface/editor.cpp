@@ -2,7 +2,7 @@
 
 Pencil - Traditional Animation Software
 Copyright (C) 2005-2007 Patrick Corrieri & Pascal Naidon
-Copyright (C) 2012-2017 Matthew Chiawen Chang
+Copyright (C) 2012-2018 Matthew Chiawen Chang
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -684,11 +684,11 @@ bool Editor::exportSeqCLI(QString filePath, LayerCamera *cameraLayer, QString fo
     }
     if (endFrame < -1)
     {
-        endFrame = mLayerManager->projectLength();
+        endFrame = mLayerManager->animationLength();
     }
     if (endFrame < 0)
     {
-        endFrame = mLayerManager->projectLength(false);
+        endFrame = mLayerManager->animationLength(false);
     }
 
     QSize exportSize = QSize(width, height);
@@ -721,11 +721,11 @@ bool Editor::exportMovieCLI(QString filePath, LayerCamera *cameraLayer, int widt
     }
     if (endFrame < -1)
     {
-        endFrame = mLayerManager->projectLength();
+        endFrame = mLayerManager->animationLength();
     }
     if (endFrame < 0)
     {
-        endFrame = mLayerManager->projectLength(false);
+        endFrame = mLayerManager->animationLength(false);
     }
 
     QSize exportSize = QSize(width, height);

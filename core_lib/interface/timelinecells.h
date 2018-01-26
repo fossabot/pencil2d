@@ -2,7 +2,7 @@
 
 Pencil - Traditional Animation Software
 Copyright (C) 2005-2007 Patrick Corrieri & Pascal Naidon
-Copyright (C) 2012-2017 Matthew Chiawen Chang
+Copyright (C) 2012-2018 Matthew Chiawen Chang
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -43,6 +43,7 @@ class TimeLineCells : public QWidget
 public:
     TimeLineCells( TimeLine* parent, Editor* editor, TIMELINE_CELL_TYPE );
     ~TimeLineCells();
+
     int getLayerNumber(int y);
     int getLayerY(int layerNumber);
     int getFrameNumber(int x);
@@ -51,7 +52,10 @@ public:
     int getOffsetX() { return mOffsetX; }
     int getOffsetY() { return mOffsetY; }
     int getLayerHeight() { return mLayerHeight; }
+    
     int getFrameLength() {return mFrameLength;}
+    void setFrameLength(int n) { mFrameLength = n; }
+
     int getFrameSize() { return mFrameSize; }
     void clearCache() { if ( mCache ) delete mCache; mCache = new QPixmap( size() ); }
 

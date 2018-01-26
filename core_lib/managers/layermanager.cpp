@@ -2,7 +2,7 @@
 
 Pencil - Traditional Animation Software
 Copyright (C) 2005-2007 Patrick Corrieri & Pascal Naidon
-Copyright (C) 2012-2017 Matthew Chiawen Chang
+Copyright (C) 2012-2018 Matthew Chiawen Chang
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -284,7 +284,7 @@ void LayerManager::notifyLayerChanged(Layer* layer)
  * @brief Get the length of current project
  * @return int: the position of the last key frame in the timeline + its length
  */
-int LayerManager::projectLength(bool includeSounds)
+int LayerManager::animationLength(bool includeSounds)
 {
     int maxFrame = -1;
 
@@ -316,6 +316,11 @@ int LayerManager::projectLength(bool includeSounds)
         }
     }
     return maxFrame;
+}
+
+void LayerManager::notifyAnimationLengthChanged()
+{
+    emit animationLengthChanged(animationLength(false));
 }
 
 int LayerManager::getIndex(Layer* layer) const

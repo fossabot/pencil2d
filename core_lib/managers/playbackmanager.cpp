@@ -2,7 +2,7 @@
 
 Pencil - Traditional Animation Software
 Copyright (C) 2005-2007 Patrick Corrieri & Pascal Naidon
-Copyright (C) 2012-2017 Matthew Chiawen Chang
+Copyright (C) 2012-2018 Matthew Chiawen Chang
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -121,7 +121,8 @@ void PlaybackManager::play()
     mTimer->setInterval(1000.f / mFps);
     mTimer->start();
 
-    // start counting frames
+    // for error correction, please ref skipFrame()
+    mPlayingFrameCounter = 1;
     mElapsedTimer->start();
 
     // Check for any sounds we should start playing part-way through.
@@ -250,14 +251,18 @@ void PlaybackManager::playSounds(int frame)
 bool PlaybackManager::skipFrame()
 {
     // uncomment these debug output to see what happens
-    //float expectedTime = (editor()->currentFrame() - mStartFrame + 1) * (1000.f / mFps);
-    //qDebug("Expected: %.2fms", expectedTime);
-    //qDebug("Actual:   %dms", mFrameTimer->elapsed());
-
-    int t = qRound((editor()->currentFrame() - mStartFrame) * (1000.f / mFps));
+    //float expectedTime = (mPlayingFrameCounter) * (1000.f / mFps);
+    //qDebug("Expected:  %.2f ms", expectedTime);
+    //qDebug("Actual:    %d   ms", mElapsedTimer->elapsed());
+    
+    int t = qRound((mPlayingFrameCounter - 1) * (1000.f / mFps));
     if (mElapsedTimer->elapsed() < t)
+    {
+        qDebug() << "skip";
         return true;
-
+    }
+    
+    ++mPlayingFrameCounter;
     return false;
 }
 
@@ -352,7 +357,7 @@ void PlaybackManager::updateStartFrame()
 
 void PlaybackManager::updateEndFrame()
 {
-    int projectLength = editor()->layers()->projectLength();
+    int projectLength = editor()->layers()->animationLength();
     mEndFrame = (mIsRangedPlayback) ? mMarkOutFrame : projectLength;
 }
 

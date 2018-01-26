@@ -2,7 +2,7 @@
 
 Pencil - Traditional Animation Software
 Copyright (C) 2005-2007 Patrick Corrieri & Pascal Naidon
-Copyright (C) 2012-2017 Matthew Chiawen Chang
+Copyright (C) 2012-2018 Matthew Chiawen Chang
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -43,7 +43,11 @@ public:
     void setLoop( bool loop );
     void setRangeState( bool range );
     void setPlaying( bool isPlaying );
-    int getFrameLength();
+    
+    int  getLength();
+    void setLength(int frame);
+    void extendLength(int frame);
+
     int getRangeLower();
     int getRangeUpper();
 
@@ -51,11 +55,6 @@ public:
 
 Q_SIGNALS:
     void modification();
-    void lengthChange( QString );
-    void frameSizeChange( int );
-    void fontSizeChange( int );
-    void labelChange( int );
-    void scrubChange( int );
 
     void addKeyClick();
     void removeKeyClick();

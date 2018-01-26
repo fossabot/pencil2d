@@ -2,7 +2,7 @@
 
 Pencil - Traditional Animation Software
 Copyright (C) 2005-2007 Patrick Corrieri & Pascal Naidon
-Copyright (C) 2012-2017 Matthew Chiawen Chang
+Copyright (C) 2012-2018 Matthew Chiawen Chang
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -66,11 +66,13 @@ public:
     int firstKeyFrameIndex();
     int lastKeyFrameIndex();
 
-    int projectLength(bool includeSounds = true);
+    int animationLength(bool includeSounds = true);
+    void notifyAnimationLengthChanged();
 
 Q_SIGNALS:
     void currentLayerChanged(int n);
     void layerCountChanged(int count);
+    void animationLengthChanged(int length);
 
 private:
     int getIndex(Layer*) const;
