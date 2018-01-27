@@ -668,15 +668,13 @@ void ScribbleArea::resizeEvent(QResizeEvent *event)
     updateAllFrames();
 }
 
-/************************************************************************************/
-// paint methods
-
 void ScribbleArea::paintBitmapBuffer()
 {
-    Layer* layer = mEditor->layers()->currentLayer();
-    int frameNumber = mEditor->currentFrame();
-
+    LayerBitmap* layer = static_cast<LayerBitmap*>(mEditor->layers()->currentLayer());
     Q_ASSERT(layer);
+    Q_ASSERT(layer->type() == Layer::BITMAP);
+
+    int frameNumber = mEditor->currentFrame();
 
     if (layer->getKeyFrameAt(frameNumber) == nullptr)
     {
@@ -685,7 +683,7 @@ void ScribbleArea::paintBitmapBuffer()
     }
 
     // Clear the temporary pixel path
-    BitmapImage *targetImage = ((LayerBitmap *)layer)->getLastBitmapImageAtFrame(mEditor->currentFrame(), 0);
+    BitmapImage* targetImage = layer->getLastBitmapImageAtFrame(mEditor->currentFrame());
     if (targetImage != NULL)
     {
         QPainter::CompositionMode cm = QPainter::CompositionMode_SourceOver;
@@ -709,20 +707,16 @@ void ScribbleArea::paintBitmapBuffer()
     }
 
     //qCDebug( mLog ) << "Paste Rect" << mBufferImg->bounds();
-
-    QRect rect = mEditor->view()->getView().mapRect(mBufferImg->bounds());
-
-    // Clear the buffer
-    mBufferImg->clear();
-
-    layer->setModified(frameNumber, true);
-    emit modification();
-
-    QPixmapCache::remove(mPixmapCacheKeys[frameNumber]);
-    mPixmapCacheKeys[frameNumber] = QPixmapCache::Key();
+    QRect rect = mEditor->view()->mapCanvasToScreen(mBufferImg->bounds()).toRect();
 
     drawCanvas(frameNumber, rect.adjusted(-1, -1, 1, 1));
     update(rect);
+
+    QPixmapCache::remove(mPixmapCacheKeys[frameNumber]);
+    mPixmapCacheKeys[frameNumber] = QPixmapCache::Key();
+    layer->setModified(frameNumber, true);
+
+    mBufferImg->clear();
 }
 
 void ScribbleArea::paintBitmapBufferRect(QRect rect)
@@ -762,7 +756,6 @@ void ScribbleArea::paintBitmapBufferRect(QRect rect)
         mBufferImg->clear();
 
         layer->setModified(frameNumber, true);
-        emit modification();
 
         QPixmapCache::remove(mPixmapCacheKeys[frameNumber]);
         mPixmapCacheKeys[frameNumber] = QPixmapCache::Key();
@@ -1623,11 +1616,10 @@ void ScribbleArea::setCurrentTool(ToolType eToolMode)
 
 void ScribbleArea::setTemporaryTool(ToolType eToolMode)
 {
-    // Only switch to remporary tool if not already in this state
+    // Only switch to temporary tool if not already in this state
     // and temporary tool is not already the current tool.
-    //
-    if (!instantTool && currentTool()->type() != eToolMode) {
-
+    if (!instantTool && currentTool()->type() != eToolMode)
+    {
         instantTool = true; // used to return to previous tool when finished (keyRelease).
         mPrevTemporalToolType = currentTool()->type();
         editor()->tools()->setCurrentTool(eToolMode);

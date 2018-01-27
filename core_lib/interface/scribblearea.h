@@ -123,7 +123,6 @@ public:
     bool isMouseInUse() { return mMouseInUse; }
 
 signals:
-    void modification();
     void modification( int );
     void multiLayerOnionSkinChanged( bool );
     void refreshPreview();
