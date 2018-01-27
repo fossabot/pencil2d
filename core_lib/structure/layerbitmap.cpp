@@ -53,30 +53,39 @@ void LayerBitmap::loadImageAtFrame(QString path, QPoint topLeft, int frameNumber
 Status LayerBitmap::saveKeyFrame(KeyFrame* pKeyFrame, QString path)
 {
     BitmapImage* pBitmapImage = static_cast<BitmapImage*>(pKeyFrame);
+    
+    if (pBitmapImage->isModified() == false)
+        return Status::SAFE;
 
-    QString theFileName = fileName(pKeyFrame->pos());
+    if (pBitmapImage->image()->isNull())
+        return Status::SAFE;
+
+    QString theFileName = fileName(pKeyFrame);
     QString strFilePath = QDir(path).filePath(theFileName);
 
-    if (!pBitmapImage->image()->save(strFilePath) && !pBitmapImage->image()->isNull())
+    if (!pBitmapImage->image()->save(strFilePath))
     {
         QStringList debugInfo;
         debugInfo << "LayerBitmap::saveKeyFrame"
-            << QString("pKeyFrame.pos() = %1").arg(pKeyFrame->pos())
-            << QString("path = %1").arg(path)
-            << QString("strFilePath = %1").arg(strFilePath);
-        return Status(Status::FAIL, debugInfo << QString("BitmapImage could not be saved"));
+            << QString("  KeyFrame.pos() = %1").arg(pKeyFrame->pos())
+            << QString("  path = %1").arg(path)
+            << QString("  strFilePath = %1").arg(strFilePath)
+            << QString("BitmapImage could not be saved");
+        return Status(Status::FAIL, debugInfo);
     }
 
+    pBitmapImage->setModified(false);
     return Status::OK;
 }
 
-QString LayerBitmap::fileName(int frame) const
+QString LayerBitmap::fileName(KeyFrame* key) const
 {
-    QString layerNumberString = QString::number(id());
-    QString frameNumberString = QString::number(frame);
-    while (layerNumberString.length() < 3) layerNumberString.prepend("0");
-    while (frameNumberString.length() < 3) frameNumberString.prepend("0");
-    return layerNumberString + "." + frameNumberString + ".png";
+    if (!key->fileName().isEmpty())
+    {
+        QFileInfo info(key->fileName());
+        return info.fileName();
+    }
+    return QString::asprintf("%03d.%05d.png", id(), key->pos());
 }
 
 QDomElement LayerBitmap::createDomElement(QDomDocument& doc)
@@ -93,7 +102,7 @@ QDomElement LayerBitmap::createDomElement(QDomDocument& doc)
 
         QDomElement imageTag = doc.createElement("image");
         imageTag.setAttribute("frame", pKeyFrame->pos());
-        imageTag.setAttribute("src", fileName(pKeyFrame->pos()));
+        imageTag.setAttribute("src", fileName(pKeyFrame));
         imageTag.setAttribute("topLeftX", pImg->topLeft().x());
         imageTag.setAttribute("topLeftY", pImg->topLeft().y());
         layerTag.appendChild(imageTag);

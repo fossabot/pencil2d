@@ -105,7 +105,10 @@ Status LayerVector::saveKeyFrame(KeyFrame* pKeyFrame, QString path)
 
     VectorImage* pVecImage = static_cast<VectorImage*>(pKeyFrame);
 
-    QString theFileName = fileName(pKeyFrame->pos());
+    if (pVecImage->isModified())
+        return Status::SAFE;
+
+    QString theFileName = fileName(pKeyFrame);
     QString strFilePath = QDir(path).filePath(theFileName);
     debugInfo << QString("strFilePath = ").append(strFilePath);
 
@@ -121,16 +124,18 @@ Status LayerVector::saveKeyFrame(KeyFrame* pKeyFrame, QString path)
         return Status(Status::FAIL, debugInfo);
     }
 
+    pVecImage->setModified(false);
     return Status::OK;
 }
 
-QString LayerVector::fileName(int frame)
+QString LayerVector::fileName(KeyFrame* key)
 {
-    QString layerNumberString = QString::number(id());
-    QString frameNumberString = QString::number(frame);
-    while (layerNumberString.length() < 3) layerNumberString.prepend("0");
-    while (frameNumberString.length() < 3) frameNumberString.prepend("0");
-    return layerNumberString + "." + frameNumberString + ".vec";
+    if (!key->fileName().isEmpty())
+    {
+        QFileInfo info(key->fileName());
+        return info.fileName();
+    }
+    return QString::asprintf("%03d.%05d.vec", id(), key->pos());
 }
 
 QDomElement LayerVector::createDomElement(QDomDocument& doc)
@@ -147,7 +152,7 @@ QDomElement LayerVector::createDomElement(QDomDocument& doc)
         //QDomElement imageTag = framesVector[index]->createDomElement(doc); // if we want to embed the data
         QDomElement imageTag = doc.createElement("image");
         imageTag.setAttribute("frame", pKeyFrame->pos());
-        imageTag.setAttribute("src", fileName(pKeyFrame->pos()));
+        imageTag.setAttribute("src", fileName(pKeyFrame));
         layerTag.appendChild(imageTag);
     });
 

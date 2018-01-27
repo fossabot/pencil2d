@@ -73,6 +73,9 @@ bool VectorImage::read(QString filePath)
             loadDomElement(element);
         }
     }
+
+    setFileName(filePath);
+    setModified(false);
     return true;
 }
 
@@ -119,6 +122,7 @@ Status VectorImage::write(QString filePath, QString format)
     xmlStream.writeEndElement(); // Close image element
     xmlStream.writeEndDocument();
 
+    setFileName(filePath);
     return Status::OK;
 }
 

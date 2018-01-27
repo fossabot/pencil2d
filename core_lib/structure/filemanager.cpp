@@ -259,7 +259,7 @@ Status FileManager::save(Object* object, QString strFileName)
                       tr("\"%1\" is a file. Please delete the file and try again.").arg(dataInfo.absoluteFilePath()));
     }
 
-    // save data
+    // -------- save key frame data  -------- 
     int layerCount = object->getLayerCount();
     debugDetails << QString("layerCount = %1").arg(layerCount);
 
@@ -269,32 +269,18 @@ Status FileManager::save(Object* object, QString strFileName)
         Layer* layer = object->getLayer(i);
         debugDetails << QString("layer[%1] = Layer[id=%2, name=%3, type=%4]").arg(i).arg(layer->id()).arg(layer->name()).arg(layer->type());
         
-        switch (layer->type())
+        Status st = layer->save(strDataFolder);
+        if (!st.ok())
         {
-        case Layer::BITMAP:
-        case Layer::VECTOR:
-        case Layer::SOUND:
-        {
-            Status st = layer->save(strDataFolder);
-            if (!st.ok())
+            isOkay = false;
+            QStringList layerDetails = st.detailsList();
+            for (QString detail : layerDetails)
             {
-                isOkay = false;
-                QStringList layerDetails = st.detailsList();
-                for (QString detail : layerDetails)
-                {
-                    detail.prepend("&nbsp;&nbsp;");
-                }
-                debugDetails << QString("- Layer[%1] failed to save").arg(i) << layerDetails;
+                detail.prepend("&nbsp;&nbsp;");
             }
-            break;
+            debugDetails << QString("- Layer[%1] failed to save").arg(i) << layerDetails;
         }
-        case Layer::CAMERA:
-            break;
-        case Layer::UNDEFINED:
-        case Layer::MOVIE:
-            Q_ASSERT(false);
-            break;
-        }
+
         if (!isOkay)
         {
             return Status(Status::FAIL, 
@@ -304,7 +290,7 @@ Status FileManager::save(Object* object, QString strFileName)
         }
     }
 
-    // save palette
+    //  -------- save palette  -------- 
     object->savePalette(strDataFolder);
 
     // -------- save main XML file -----------
