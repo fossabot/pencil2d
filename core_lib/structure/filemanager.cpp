@@ -182,6 +182,12 @@ Status FileManager::save(Object* object, QString strFileName)
         return Status(Status::INVALID_ARGUMENT, debugDetails << "object parameter is null");
     }
 
+    int totalCount = object->totalKeyFrameCount();
+    mMaxProgressValue = totalCount + 5;
+    emit progressRangeChanged(mMaxProgressValue);
+
+    progressForward();
+
     QFileInfo fileInfo(strFileName);
     if (fileInfo.isDir())
     {
@@ -267,7 +273,7 @@ Status FileManager::save(Object* object, QString strFileName)
         Layer* layer = object->getLayer(i);
         debugDetails << QString("layer[%1] = Layer[id=%2, name=%3, type=%4]").arg(i).arg(layer->id()).arg(layer->name()).arg(layer->type());
         
-        Status st = layer->save(strDataFolder);
+        Status st = layer->save(strDataFolder, [this] { progressForward(); });
         if (!st.ok())
         {
             isOkay = false;
@@ -291,6 +297,8 @@ Status FileManager::save(Object* object, QString strFileName)
     //  -------- save palette  -------- 
     object->savePalette(strDataFolder);
 
+    progressForward();
+
     // -------- save main XML file -----------
     QFile file(strMainXMLFile);
     if (!file.open(QFile::WriteOnly | QFile::Text))
@@ -303,6 +311,8 @@ Status FileManager::save(Object* object, QString strFileName)
     QDomProcessingInstruction encoding = xmlDoc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\"");
     xmlDoc.appendChild(encoding);
     xmlDoc.appendChild(root);
+
+    progressForward();
 
     // save editor information
     QDomElement projectDataElement = saveProjectData(object->data(), xmlDoc);
@@ -319,6 +329,8 @@ Status FileManager::save(Object* object, QString strFileName)
     out.flush();
     file.close();
 
+    progressForward();
+
     if (!isOldFile)
     {
         bool ok = MiniZ::compressFolder(strFileName, strTempWorkingFolder);
@@ -331,6 +343,8 @@ Status FileManager::save(Object* object, QString strFileName)
 
     object->setFilePath(strFileName);
     object->setModified(false);
+
+    progressForward();
 
     return Status::OK;
 }

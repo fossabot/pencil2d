@@ -56,6 +56,7 @@ BitmapImage::BitmapImage(const QString& path, const QPoint& topLeft)
     mImage.reset();
 
     mBounds = QRect(topLeft, QSize(1,1));
+    setModified(false);
 }
 
 BitmapImage::~BitmapImage()
