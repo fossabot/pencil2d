@@ -111,7 +111,7 @@ QDomElement LayerBitmap::createDomElement(QDomDocument& doc)
     return layerTag;
 }
 
-void LayerBitmap::loadDomElement(QDomElement element, QString dataDirPath)
+void LayerBitmap::loadDomElement(QDomElement element, QString dataDirPath, ProgressCallback progressStep)
 {
     if (!element.attribute("id").isNull())
     {
@@ -136,6 +136,8 @@ void LayerBitmap::loadDomElement(QDomElement element, QString dataDirPath)
                 int x = imageElement.attribute("topLeftX").toInt();
                 int y = imageElement.attribute("topLeftY").toInt();
                 loadImageAtFrame(path, QPoint(x, y), position);
+
+                progressStep();
             }
         }
         imageTag = imageTag.nextSibling();

@@ -159,7 +159,7 @@ QDomElement LayerVector::createDomElement(QDomDocument& doc)
     return layerTag;
 }
 
-void LayerVector::loadDomElement(QDomElement element, QString dataDirPath)
+void LayerVector::loadDomElement(QDomElement element, QString dataDirPath, ProgressCallback progressStep)
 {
     if (!element.attribute("id").isNull())
     {
@@ -191,6 +191,7 @@ void LayerVector::loadDomElement(QDomElement element, QString dataDirPath)
                     addNewEmptyKeyAt(frame);
                     getVectorImageAtFrame(frame)->loadDomElement(imageElement);
                 }
+                progressStep();
             }
         }
         imageTag = imageTag.nextSibling();
