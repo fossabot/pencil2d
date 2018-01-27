@@ -66,12 +66,15 @@ void BitmapImage::setImage(QImage* img)
 {
     Q_CHECK_PTR(img);
     mImage.reset(img);
+
+    modification();
 }
 
 BitmapImage& BitmapImage::operator=(const BitmapImage& a)
 {
     mBounds = a.mBounds;
     mImage = std::make_shared< QImage >(*a.mImage);
+    modification();
     return *this;
 }
 
@@ -110,7 +113,6 @@ BitmapImage BitmapImage::copy()
 
 BitmapImage BitmapImage::copy(QRect rectangle)
 {
-    //QRect intersection = boundaries.intersected( rectangle );
     QRect intersection2 = rectangle.translated(-topLeft());
     BitmapImage result = BitmapImage(rectangle, image()->copy(intersection2));
     return result;
@@ -140,6 +142,8 @@ void BitmapImage::paste(BitmapImage* bitmapImage, QPainter::CompositionMode cm)
     painter.setCompositionMode(cm);
     painter.drawImage(bitmapImage->mBounds.topLeft() - mBounds.topLeft(), *image2);
     painter.end();
+
+    modification();
 }
 
 void BitmapImage::add(BitmapImage* bitmapImage)
@@ -186,6 +190,7 @@ void BitmapImage::add(BitmapImage* bitmapImage)
             }
         }
     }
+    modification();
 }
 
 void BitmapImage::compareAlpha(BitmapImage* bitmapImage) // this function picks the greater alpha value
@@ -225,6 +230,7 @@ void BitmapImage::compareAlpha(BitmapImage* bitmapImage) // this function picks 
 void BitmapImage::moveTopLeft(QPoint point)
 {
     mBounds.moveTopLeft(point);
+    modification();
 }
 
 void BitmapImage::transform(QRect newBoundaries, bool smoothTransform)
@@ -232,7 +238,7 @@ void BitmapImage::transform(QRect newBoundaries, bool smoothTransform)
     mBounds = newBoundaries;
     newBoundaries.moveTopLeft(QPoint(0, 0));
     QImage* newImage = new QImage(mBounds.size(), QImage::Format_ARGB32_Premultiplied);
-    //newImage->fill(QColor(255,255,255).rgb());
+
     QPainter painter(newImage);
     painter.setRenderHint(QPainter::SmoothPixmapTransform, smoothTransform);
     painter.setCompositionMode(QPainter::CompositionMode_Source);
@@ -241,6 +247,8 @@ void BitmapImage::transform(QRect newBoundaries, bool smoothTransform)
     painter.drawImage(newBoundaries, *image());
     painter.end();
     mImage.reset(newImage);
+
+    modification();
 }
 
 BitmapImage BitmapImage::transformed(QRect selection, QTransform transform, bool smoothTransform)
@@ -304,6 +312,8 @@ void BitmapImage::extend(QRect rectangle)
         }
         mImage.reset(newImage);
         mBounds = newBoundaries;
+
+        modification();
     }
 }
 
@@ -329,7 +339,10 @@ void BitmapImage::setPixel(QPoint P, QRgb colour)
 {
     extend(P);
     if (mBounds.contains(P))
+    {
         image()->setPixel(P - topLeft(), colour);
+    }
+    modification();
 }
 
 
@@ -346,6 +359,7 @@ void BitmapImage::drawLine(QPointF P1, QPointF P2, QPen pen, QPainter::Compositi
         painter.drawLine(P1 - topLeft(), P2 - topLeft());
         painter.end();
     }
+    modification();
 }
 
 void BitmapImage::drawRect(QRectF rectangle, QPen pen, QBrush brush, QPainter::CompositionMode cm, bool antialiasing)
@@ -368,6 +382,7 @@ void BitmapImage::drawRect(QRectF rectangle, QPen pen, QBrush brush, QPainter::C
         painter.drawRect(rectangle.translated(-topLeft()));
         painter.end();
     }
+    modification();
 }
 
 void BitmapImage::drawEllipse(QRectF rectangle, QPen pen, QBrush brush, QPainter::CompositionMode cm, bool antialiasing)
@@ -389,9 +404,9 @@ void BitmapImage::drawEllipse(QRectF rectangle, QPen pen, QBrush brush, QPainter
         painter.setBrush(brush);
         painter.setCompositionMode(cm);
         painter.drawEllipse(rectangle.translated(-topLeft()));
-
         painter.end();
     }
+    modification();
 }
 
 void BitmapImage::drawPath(QPainterPath path, QPen pen, QBrush brush,
@@ -399,7 +414,7 @@ void BitmapImage::drawPath(QPainterPath path, QPen pen, QBrush brush,
 {
     int width = pen.width();
     qreal inc = 1.0 + width / 20.0;
-    //if (inc<1) { inc=1.0; }
+
     extend(path.controlPointRect().adjusted(-width, -width, width, width).toRect());
 
     if (!image()->isNull())
@@ -413,6 +428,7 @@ void BitmapImage::drawPath(QPainterPath path, QPen pen, QBrush brush,
         painter.setMatrixEnabled(true);
         if (path.length() > 0)
         {
+            /*
             for (int pt = 0; pt < path.elementCount() - 1; pt++)
             {
                 qreal dx = path.elementAt(pt + 1).x - path.elementAt(pt).x;
@@ -427,8 +443,8 @@ void BitmapImage::drawPath(QPainterPath path, QPen pen, QBrush brush,
                     painter.drawPoint(QPointF(x, y));
                 }
             }
-
-            //painter.drawPath( path );
+            */
+            painter.drawPath( path );
         }
         else
         {
@@ -437,12 +453,14 @@ void BitmapImage::drawPath(QPainterPath path, QPen pen, QBrush brush,
         }
         painter.end();
     }
+    modification();
 }
 
 void BitmapImage::clear()
 {
     mImage = std::make_shared< QImage >(); // null image
     mBounds = QRect(0, 0, 0, 0);
+    modification();
 }
 
 QRgb BitmapImage::constScanLine(int x, int y)
@@ -460,7 +478,6 @@ void BitmapImage::scanLine(int x, int y, QRgb colour)
     extend(QPoint(x, y));
     if (mBounds.contains(QPoint(x, y)))
     {
-
         // Make sure color is premultiplied before calling
         *(reinterpret_cast<QRgb*>(image()->scanLine(y - topLeft().y())) + x - topLeft().x()) =
             qRgba(
@@ -480,11 +497,8 @@ void BitmapImage::clear(QRect rectangle)
     painter.setCompositionMode(QPainter::CompositionMode_Clear);
     painter.fillRect(clearRectangle, QColor(0, 0, 0, 0));
     painter.end();
-}
 
-int BitmapImage::pow(int n)   // pow of a number
-{
-    return n*n;
+    modification();
 }
 
 bool BitmapImage::compareColor(QRgb color1, QRgb color2, int tolerance)
@@ -600,5 +614,6 @@ void BitmapImage::floodFill(BitmapImage* targetImage,
     }
 
     targetImage->paste(replaceImage);
+    targetImage->modification();
     delete replaceImage;
 }

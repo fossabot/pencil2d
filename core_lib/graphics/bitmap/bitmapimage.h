@@ -72,7 +72,6 @@ public:
     void clear(QRect rectangle);
     void clear(QRectF rectangle) { clear(rectangle.toRect()); }
 
-    static int pow(int);
     static bool compareColor(QRgb color1, QRgb color2, int tolerance);
     static void floodFill(BitmapImage* targetImage, QRect cameraRect, QPoint point, QRgb oldColor, QRgb newColor, int tolerance);
 
