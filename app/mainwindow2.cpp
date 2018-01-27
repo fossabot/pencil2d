@@ -527,12 +527,10 @@ bool MainWindow2::openObject(QString strFilePath)
     connect(&fm, &FileManager::progressChanged, [&progress](int p)
     {
         progress.setValue(p);
-        qDebug() << "Progress=" << p;
         QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
     });
     connect(&fm, &FileManager::progressRangeChanged, [&progress](int max)
     {
-        qDebug() << "Progress Max=" << max;
         progress.setRange(0, max + 3);
     });
 
@@ -586,12 +584,10 @@ bool MainWindow2::saveObject(QString strSavedFileName)
     connect(&fm, &FileManager::progressChanged, [&progress](int p)
     {
         progress.setValue(p);
-        qDebug() << "Progress=" << p;
         QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
     });
     connect(&fm, &FileManager::progressRangeChanged, [&progress](int max)
     {
-        qDebug() << "Progress Max=" << max;
         progress.setRange(0, max + 3);
     });
 
