@@ -43,7 +43,7 @@ BitmapImage::BitmapImage(const QRect& rectangle, const QImage& image)
 {
     mBounds = rectangle.normalized();
     mExtendable = true;
-    mImage = std::make_shared< QImage >(image);
+    mImage = std::make_shared<QImage>(image);
     if (mImage->width() != rectangle.width() || mImage->height() != rectangle.height())
     {
         qDebug() << "Error instancing bitmapImage.";
@@ -54,13 +54,7 @@ BitmapImage::BitmapImage(const QString& path, const QPoint& topLeft)
 {
     setFileName(path);
     mImage.reset();
-    /*
-    mImage = std::make_shared< QImage >(path);
-    if (mImage->isNull())
-    {
-        qDebug() << "ERROR: Image " << path << " not loaded";
-    }
-    */
+
     mBounds = QRect(topLeft, QSize(1,1));
 }
 
@@ -104,7 +98,7 @@ QImage* BitmapImage::image()
     {
         mImage = std::make_shared< QImage >(fileName());
         mBounds.setSize(mImage->size());
-        qDebug() << "fileName=" << fileName();
+        qDebug() << "Load file=" << fileName();
     }
     return mImage.get();
 }

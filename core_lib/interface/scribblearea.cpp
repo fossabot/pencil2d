@@ -34,8 +34,6 @@ GNU General Public License for more details.
 #include "layermanager.h"
 #include "playbackmanager.h"
 
-#define round(f) ((int)(f + 0.5))
-
 
 ScribbleArea::ScribbleArea(QWidget* parent) : QWidget(parent),
 mLog("ScribbleArea")
@@ -510,7 +508,7 @@ void ScribbleArea::mousePressEvent(QMouseEvent* event)
         mLastPoint = mEditor->view()->mapScreenToCanvas(mLastPixel);
     }
 
-    // ----- assisted tool adjusment -- todo: simplify this
+    // ----- assisted tool adjustment -- todo: simplify this
     if (event->button() == Qt::LeftButton && mQuickSizing)
     {
         if ((event->modifiers() == Qt::ShiftModifier) && (currentTool()->properties.width > -1))
@@ -524,12 +522,6 @@ void ScribbleArea::mousePressEvent(QMouseEvent* event)
             //adjust feather if not locked
             currentTool()->startAdjusting(FEATHER, 1);
             return;
-        }
-        if ((event->modifiers() == (Qt::ShiftModifier | Qt::AltModifier)) && (currentTool()->properties.width > -1))
-        {
-            //adjust width if not locked
-            //currentTool()->startAdjusting( WIDTH, 0 );
-            //return;
         }
         if ((event->modifiers() == (Qt::ControlModifier | Qt::AltModifier)) && (currentTool()->properties.feather > -1))
         {
@@ -565,11 +557,9 @@ void ScribbleArea::mousePressEvent(QMouseEvent* event)
         mMouseInUse = false;
         return;
     }
-    // ---
+
     mCurrentPixel = mStrokeManager->getCurrentPixel();
     mCurrentPoint = mEditor->view()->mapScreenToCanvas(mCurrentPixel);
-    //qDebug() << "CurPoint: " << mCurrentPoint;
-
 
     // the user is also pressing the mouse
     if (event->buttons() & Qt::LeftButton || event->buttons() & Qt::RightButton)
@@ -625,20 +615,22 @@ void ScribbleArea::mouseMoveEvent(QMouseEvent *event)
     updateCanvasCursor();
 
 #ifdef DEBUG_FPS
-    // debug fps count.
-    clock_t curTime = clock();
-    mDebugTimeQue.push_back(curTime);
-
-    while (mDebugTimeQue.size() > 100)
+    if (mMouseInUse)
     {
-        mDebugTimeQue.pop_front();
-    }
+        clock_t curTime = clock();
+        mDebugTimeQue.push_back(curTime);
 
-    if (mDebugTimeQue.size() > 2)
-    {
-        clock_t interval = mDebugTimeQue.back() - mDebugTimeQue.front();
-        double fps = mDebugTimeQue.size() / ((double)interval) * CLOCKS_PER_SEC;
-        //qDebug() << fps;
+        while (mDebugTimeQue.size() > 30)
+        {
+            mDebugTimeQue.pop_front();
+        }
+
+        if (mDebugTimeQue.size() > 30)
+        {
+            clock_t interval = mDebugTimeQue.back() - mDebugTimeQue.front();
+            double fps = mDebugTimeQue.size() / ((double)interval) * CLOCKS_PER_SEC;
+            qDebug() << fps;
+        }
     }
 #endif
 }
@@ -703,11 +695,10 @@ void ScribbleArea::paintBitmapBuffer()
     Layer* layer = mEditor->layers()->currentLayer();
     int frameNumber = mEditor->currentFrame();
 
-    // ---- checks ------
     Q_ASSERT(layer);
-    if (layer == NULL) { return; } // TODO: remove in future.
 
-    if (layer->getKeyFrameAt(frameNumber) == nullptr) {
+    if (layer->getKeyFrameAt(frameNumber) == nullptr)
+    {
         updateCurrentFrame();
         return;
     }
@@ -755,17 +746,14 @@ void ScribbleArea::paintBitmapBuffer()
 
 void ScribbleArea::paintBitmapBufferRect(QRect rect)
 {
+    /*
     int frameNumber = mEditor->currentFrame();
     if (allowSmudging() || mEditor->playback()->isPlaying())
     {
         Layer* layer = mEditor->layers()->currentLayer();
-
-        // ---- checks ------
         Q_ASSERT(layer);
-        if (layer == NULL) { return; } // TODO: remove in future.
 
         BitmapImage *targetImage = ((LayerBitmap *)layer)->getLastBitmapImageAtFrame(mEditor->currentFrame(), 0);
-        // Clear the temporary pixel path
 
         if (targetImage != NULL)
         {
@@ -801,6 +789,7 @@ void ScribbleArea::paintBitmapBufferRect(QRect rect)
         drawCanvas(frameNumber, rect.adjusted(-1, -1, 1, 1));
         update(rect);
     }
+    */
 }
 
 void ScribbleArea::clearBitmapBuffer()
@@ -832,7 +821,7 @@ void ScribbleArea::refreshVector(const QRectF& rect, int rad)
 
     //qDebug() << "Logical:  " << rect;
     //qDebug() << "Physical: " << mEditor->view()->mapCanvasToScreen( rect.normalized() );
-//update();
+    //update();
 }
 
 void ScribbleArea::paintCanvasCursor(QPainter& painter)
@@ -1481,7 +1470,6 @@ void ScribbleArea::setSelection(QRectF rect, bool trueOrFalse)
 
 
     // Temporary disabled this as it breaks selection rotate key (ctrl) event.
-    //
     // displaySelectionProperties();
 }
 
