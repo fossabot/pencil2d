@@ -29,7 +29,7 @@ GNU General Public License for more details.
 CanvasPainter::CanvasPainter(QObject* parent) : QObject(parent)
 , mLog("CanvasRenderer")
 {
-    ENABLE_DEBUG_LOG(mLog, true);
+    ENABLE_DEBUG_LOG(mLog, false);
 }
 
 CanvasPainter::~CanvasPainter()
