@@ -515,10 +515,14 @@ void ActionCommands::duplicateKey()
 
     layer->addKeyFrame(nextEmptyFrame, dupKey);
     mEditor->scrubTo(nextEmptyFrame);
-    
+
     if (layer->type() == Layer::SOUND)
     {
         mEditor->sound()->processSound(dynamic_cast<SoundClip*>(dupKey));
+    }
+    else
+    {
+        key->setFileName(""); // don't share filename
     }
 
     mEditor->layers()->notifyAnimationLengthChanged();
