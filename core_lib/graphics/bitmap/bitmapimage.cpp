@@ -98,7 +98,7 @@ void BitmapImage::paintImage(QPainter& painter, QImage& image, QRect sourceRect,
 
 QImage* BitmapImage::image()
 {
-    if (!mImage)
+    if (mImage == nullptr)
     {
         mImage = std::make_shared< QImage >(fileName());
         mBounds.setSize(mImage->size());
