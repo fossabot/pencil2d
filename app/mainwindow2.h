@@ -95,7 +95,7 @@ protected:
 
 private:
     bool openObject(QString strFilename);
-    bool saveObject(QString strFileName);
+    bool saveObject(QString strFileName, bool forceWriteAllFiles = false);
 
     void dockAllSubWidgets();
 

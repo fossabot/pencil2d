@@ -496,6 +496,10 @@ bool MainWindow2::saveAsNewDocument()
     {
         fileName = fileName + PFF_EXTENSION;
     }
+    if (fileName.endsWith(PFF_OLD_EXTENSION))
+    {
+        return saveObject(fileName, true);
+    }
     return saveObject(fileName);
 }
 
@@ -511,6 +515,8 @@ void MainWindow2::openFile(QString filename)
 
 bool MainWindow2::openObject(QString strFilePath)
 {
+    clock_t t1 = clock();
+
     QProgressDialog progress(tr("Opening document..."), tr("Abort"), 0, 100, this);
 
     // Don't show progress bar if running without a GUI (aka. when rendering from command line)
@@ -568,11 +574,29 @@ bool MainWindow2::openObject(QString strFilePath)
 
     progress.setValue(progress.maximum());
 
+    clock_t t2 = clock() - t1;
+    qDebug("Open Object Time = %.3f sec", float(t2) / CLOCKS_PER_SEC);
+
     return true;
 }
 
-bool MainWindow2::saveObject(QString strSavedFileName)
+bool MainWindow2::saveObject(QString strSavedFileName, bool forceWriteAllFiles)
 {
+    clock_t t1 = clock();
+    
+    if (forceWriteAllFiles)
+    {
+        Object* o = mEditor->object();
+        for (int i = 0; i < o->getLayerCount(); ++i)
+        {
+            Layer* layer = o->getLayer(i);
+            layer->foreachKeyFrame([](KeyFrame* key)
+            {
+                key->setModified(true);
+            });
+        }
+    }
+
     QProgressDialog progress(tr("Saving document..."), tr("Abort"), 0, 100, this);
     progress.setWindowModality(Qt::WindowModal);
     progress.show();
@@ -635,6 +659,9 @@ bool MainWindow2::saveObject(QString strSavedFileName)
     updateSaveState();
 
     progress.setValue(progress.maximum());
+
+    clock_t t2 = clock() - t1;
+    qDebug("Save Object Time = %.3f sec", float(t2) / CLOCKS_PER_SEC);
 
     return true;
 }
