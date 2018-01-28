@@ -210,7 +210,8 @@ void CanvasPainter::paintBitmapFrame(QPainter& painter,
         return;
     }
 
-    qCDebug(mLog) << "Paint Image Size:" << paintedImage->image(); // Critical! force the BitmapImage to load the image
+    paintedImage->image(); // Critical! force the BitmapImage to load the image
+    qCDebug(mLog) << "Paint Image Size:" << paintedImage->image()->size();
 
     BitmapImage paintToImage;
     paintToImage.paste(paintedImage);
