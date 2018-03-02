@@ -157,21 +157,22 @@ void TimeControls::makeConnections()
     connect(mLoopButton, &QPushButton::clicked, this, &TimeControls::loopButtonClicked);
     connect(mPlaybackRangeCheckBox, &QCheckBox::clicked, this, &TimeControls::playbackRangeClicked);
 
-    auto spinBoxValueChanged = static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged);
-    connect(mLoopStartSpinBox, spinBoxValueChanged, this, &TimeControls::loopStartValueChanged);
-    connect(mLoopEndSpinBox, spinBoxValueChanged, this, &TimeControls::loopEndValueChanged);
+    connect(mLoopStartSpinBox, SIGNAL(valueChanged(int)), this, SLOT(loopStartValueChanged(int)));
+    connect(mLoopEndSpinBox, SIGNAL(valueChanged(int)), this, SLOT(loopEndValueChanged(int)));
 
     connect(mPlaybackRangeCheckBox, &QCheckBox::toggled, mLoopStartSpinBox, &QSpinBox::setEnabled);
     connect(mPlaybackRangeCheckBox, &QCheckBox::toggled, mLoopEndSpinBox, &QSpinBox::setEnabled);
 
     connect(mSoundButton, &QPushButton::clicked, this, &TimeControls::soundClick);
     connect(mSoundButton, &QPushButton::clicked, this, &TimeControls::updateSoundIcon);
-    auto connection = connect(mFpsBox, spinBoxValueChanged, this, &TimeControls::fpsClick);
+    connect(mFpsBox, SIGNAL(valueChanged(int)), this, SLOT(fpsClick(int)));
+    /*
     if(!connection)
     {
         // Use "editingFinished" if the "spinBoxValueChanged" signal doesn't work...
         connect(mFpsBox, &QSpinBox::editingFinished, this, &TimeControls::onFpsEditingFinished);
     }
+    */
 }
 
 void TimeControls::playButtonClicked()
