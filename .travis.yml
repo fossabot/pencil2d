@@ -53,7 +53,7 @@ before_install:
     brew update;
     brew install p7zip;
     brew upgrade python
-    brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/13d52537d1e0e5f913de46390123436d220035f6/Formula/qt.rb;
+    brew install qt
     brew link qt --force;
   fi'
 
@@ -67,7 +67,7 @@ install:
 before_script:
   - echo "are changes related to source code?"
   - 'if [ "$TRAVIS_BRANCH" != "release" ]; then
-    bash $TRAVIS_BUILD_DIR/util/checkchanges.sh;
+    echo "ok"
   fi'
   - 'if [ "$TRAVIS_OS_NAME" == "linux" ]; then
     . /opt/qt59/bin/qt59-env.sh;
