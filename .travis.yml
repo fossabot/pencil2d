@@ -65,10 +65,6 @@ install:
   - pip3 -V
 
 before_script:
-  - echo "are changes related to source code?"
-  - 'if [ "$TRAVIS_BRANCH" != "release" ]; then
-    echo "ok"
-  fi'
   - 'if [ "$TRAVIS_OS_NAME" == "linux" ]; then
     . /opt/qt59/bin/qt59-env.sh;
     export DISPLAY=:99.0;
