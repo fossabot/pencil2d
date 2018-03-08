@@ -13,9 +13,12 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 */
-#include <QtDebug>
+#include <QDebug>
 #include <QListWidget>
 #include <QListWidgetItem>
+#include <QVBoxLayout>
+#include <QColorDialog>
+#include <QInputDialog>
 #include "colourref.h"
 #include "object.h"
 #include "editor.h"

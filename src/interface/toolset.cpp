@@ -13,8 +13,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 */
-#include <QtGui>
+
 #include <math.h>
+#include <QGridLayout>
 #include "spinslider.h"
 #include "tooloptiondockwidget.h"
 #include "toolset.h"

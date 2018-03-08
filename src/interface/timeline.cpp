@@ -18,6 +18,9 @@ GNU General Public License for more details.
 #include <QPoint>
 #include <QWidget>
 #include <QScrollBar>
+#include <QHBoxLayout>
+#include <QMenu>
+#include <QSplitter>
 
 #include "editor.h"
 #include "toolset.h"

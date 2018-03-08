@@ -21,7 +21,6 @@ GNU General Public License for more details.
 #include <QList>
 #include <QString>
 #include <QPainter>
-#include <phonon>
 #include "layerimage.h"
 
 class LayerSound : public LayerImage
@@ -45,7 +44,7 @@ public:
     void playSound(int frame,int fps);
     void stopSound();
 
-    bool isEmpty() const { return sound.count() == 0; }
+    bool isEmpty() const { return true; }
     // graphic representation -- could be put in another class
     void paintImages(QPainter& painter, TimeLineCells* cells, int x, int y, int width, int height, bool selected, int frameSize);
 
@@ -54,23 +53,14 @@ public:
     //void mouseRelease(QMouseEvent *event, int frameNumber);
 
     QString getSoundFilepathAt(int index) { return soundFilepath.at(index); }
-    int getSoundSize() { return sound.size(); }
-    bool soundIsNotNull(int index) { return (sound[index] != NULL); }
+    int getSoundSize() { return 0; }
+    bool soundIsNotNull(int index) { return false; }
 
 protected:
-    //bool modified;
-    //QList<int> startingFrame;
-    //QList<QString> filePath;
     QList<QString> soundFilepath;
     QList<qint64> soundSize;
-//#	QList<QSound*> sound;
     // graphic representation -- could be put in another class
     void swap(int i, int j);
-
-
-    QList<Phonon::MediaObject*> sound;
-    QList<Phonon::AudioOutput*> outputDevices;
-
 
 public slots:
     void addTimelineKey(qint64 newTotalTime);

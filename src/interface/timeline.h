@@ -17,6 +17,7 @@ GNU General Public License for more details.
 #define TIMELINE_H
 
 #include <QDockWidget>
+#include <QScrollBar>
 #include "toolset.h"
 #include "timecontrols.h"
 

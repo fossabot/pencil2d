@@ -16,7 +16,7 @@ GNU General Public License for more details.
 #ifndef TOOLSET_H
 #define TOOLSET_H
 
-#include <QtGui>
+#include <QDockWidget>
 #include "pencildef.h"
 
 class QToolButton;

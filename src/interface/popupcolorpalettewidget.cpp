@@ -1,5 +1,6 @@
 #include <QtGui>
 #include <QBoxLayout>
+#include <QGraphicsDropShadowEffect>
 #include "colorbox.h"
 #include "popupcolorpalettewidget.h"
 
@@ -14,7 +15,7 @@ PopupColorPaletteWidget::PopupColorPaletteWidget( ScribbleArea *parent ) :
     m_colorBox->adjustSize();
     mainLayout->addWidget(m_colorBox);
     adjustSize();
-    QGraphicsDropShadowEffect* effect = new QGraphicsDropShadowEffect();
+    QGraphicsDropShadowEffect* effect = new QGraphicsDropShadowEffect;
     effect->setXOffset(2);
     effect->setYOffset(2);
     effect->setBlurRadius(5);

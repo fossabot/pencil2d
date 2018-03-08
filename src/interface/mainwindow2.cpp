@@ -18,7 +18,11 @@ GNU General Public License for more details.
 #include <QList>
 #include <QMenu>
 #include <QScopedPointer>
-
+#include <QMessageBox>
+#include <QFileDialog>
+#include <QProgressDialog>
+#include <QDesktopWidget>
+#include <QDesktopServices>
 
 #include "pencildef.h"
 #include "pencilsettings.h"

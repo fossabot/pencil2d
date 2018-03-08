@@ -5,8 +5,7 @@
 CONFIG += qt debug console
 TEMPLATE = app
 TARGET = Pencil
-MOC_DIR = .moc
-OBJECTS_DIR = .obj
+
 DEPENDPATH += . src
 INCLUDEPATH += . src \
             src/external/flash \
@@ -20,11 +19,11 @@ INCLUDEPATH += . src \
             src/ui
 
 QT += xml \
-phonon \
 core \
 gui \
 xmlpatterns \
-svg
+svg \
+widgets
 
 DEPENDPATH += ${INCLUDEPATH}
 

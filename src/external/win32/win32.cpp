@@ -18,6 +18,7 @@ GNU General Public License for more details.
 #include <QProcess>
 #include <QDir>
 #include <QString>
+#include <QProgressDialog>
 #include "object.h"
 #include "editor.h"
 
@@ -37,37 +38,9 @@ qint16 safeSum ( qint16 a, qint16 b)
     return a+b;
 }
 
-
-
-
 void initialise()
 {
-    qDebug() << "Initialize win32: <nothing, for now>";
-    
-    // Phonon capabilities
-    QStringList mimeTypes = Phonon::BackendCapabilities::availableMimeTypes();
-    /*
-    foreach (QString mimeType, mimeTypes)
-    {
-        if (mimeType.contains("audio")) qDebug() << "Phonon capability: " << mimeType;
-    }
-    */
-    // QImageReader capabilities
-    QList<QByteArray> formats = QImageReader::supportedImageFormats();
-    foreach (QString format, formats)
-    {
-        //qDebug() << "QImageReader capability: " << format;
-    }
-
-    // QImageWriter capabilities
-    formats = QImageWriter::supportedImageFormats();
-    foreach (QString format, formats)
-    {
-        //qDebug() << "QImageWriter capability: " << format;
-    }
 }
-
-
 
 // added parameter exportFps -> frame rate of exported video
 // added parameter exportFormat -> to set ffmpeg parameters

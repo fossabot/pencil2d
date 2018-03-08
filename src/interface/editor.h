@@ -21,6 +21,7 @@ GNU General Public License for more details.
 #include <QMainWindow>
 #include <QLabel>
 #include <QToolButton>
+#include <QComboBox>
 #include "timeline.h"
 #include "scribblearea.h"
 #include "toolset.h"
@@ -237,8 +238,6 @@ public slots:
     void toggleShowAllLayers();
     void resetMirror();
 
-    void print();
-    //void detachAllPalettes();
     void restorePalettesSettings(bool, bool, bool);
     void saveSvg();
 
@@ -251,9 +250,6 @@ private slots:
 
     void saveLength(QString);
     void getCameraLayer();
-
-    void printAndPreview(QPrinter*);
-
 
 private:
     ScribbleArea* scribbleArea;    

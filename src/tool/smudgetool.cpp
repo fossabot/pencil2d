@@ -48,9 +48,12 @@ QCursor SmudgeTool::cursor()
     {
         return circleCursors(); // two circles cursor
     }
-    if ( toolMode == 0 ) { //normal mode
+    if ( toolMode == 0 )
+    { //normal mode
         return QCursor(QPixmap(":icons/smudge.png"),3 ,16);
-    } else { // blured mode
+    }
+    else
+    { // blured mode
         return QCursor(QPixmap(":icons/liquify.png"),3,16);
     }
 }
@@ -70,16 +73,19 @@ void SmudgeTool::adjustPressureSensitiveProperties(qreal pressure, bool mouseDev
 
 bool SmudgeTool::keyPressEvent(QKeyEvent *event)
 {
-    if (event->key() == Qt::Key_Alt) {
+    if (event->key() == Qt::Key_Alt)
+    {
         toolMode = 1; // alternative mode
         m_pScribbleArea->setCursor( cursor() ); // update cursor
     }
+    return true;
 }
 
 bool SmudgeTool::keyReleaseEvent(QKeyEvent *event)
 {
     toolMode = 0; // default mode
     m_pScribbleArea->setCursor( cursor() ); // update cursor
+    return true;
 }
 
 void SmudgeTool::mousePressEvent(QMouseEvent *event)

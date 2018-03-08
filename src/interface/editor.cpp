@@ -19,6 +19,12 @@ GNU General Public License for more details.
 #include <QTimer>
 #include <QSvgGenerator>
 #include <QMessageBox>
+#include <QFileDialog>
+#include <QDialogButtonBox>
+#include <QApplication>
+#include <QInputDialog>
+#include <QGroupBox>
+#include <QClipboard>
 
 #include "editor.h"
 #include "layerbitmap.h"
@@ -1930,75 +1936,6 @@ void Editor::gridview()
     QMessageBox msgBox;
     msgBox.setText("Would you like to add a camera layer?");
     msgBox.exec();
-}
-
-void Editor::print()
-{
-    QPrinter printer(QPrinter::HighResolution);
-    //printer.setOrientation(QPrinter::Landscape);
-    //printer.setFullPage(false);
-    //printer->setPaperSize(QPrinter::A4);
-
-    QPrintPreviewDialog printPreviewDialog(&printer,this);
-    connect(&printPreviewDialog, SIGNAL(paintRequested(QPrinter*)), this, SLOT(printAndPreview(QPrinter*)));
-    if (printPreviewDialog.exec() == QDialog::Accepted)
-    {
-        if (!printer.isValid())
-        {
-            QMessageBox msg;
-            msg.setText("An invalid printer was selected. The print job will now abort.");
-            msg.setIcon(QMessageBox::Warning);
-            msg.exec();
-            return;
-        }
-
-        printAndPreview(&printer);
-    }
-}
-
-void Editor::printAndPreview(QPrinter* printer)
-{
-    QRect exportRect = scribbleArea->rect();
-    QSize exportSize = exportRect.size();
-    if (printer->outputFileName() != "")
-    {
-        QPrinter pdfPrinter(QPrinter::ScreenResolution);
-        pdfPrinter.setOutputFileName(printer->outputFileName());
-        pdfPrinter.setOutputFormat(QPrinter::PdfFormat);
-        pdfPrinter.setOrientation(printer->orientation());
-        QPainter painter(&pdfPrinter);
-        painter.setRenderHint(QPainter::HighQualityAntialiasing);
-        QRect pageRect = pdfPrinter.pageRect();
-        pageRect.moveTo(0, 0);
-        qDebug() << "page:" << pageRect.width() << "x" << pageRect.height();
-        qDebug() << "image:" << exportRect.width() << "x" << exportRect.height();
-        if (exportSize.width() >= exportSize.height())
-        {
-            // landscape
-        }
-        else
-        {
-            // portrait
-        }
-        //exportSize.scale(pageRect.size(), Qt::KeepAspectRatio);
-        //exportRect.setSize(exportSize);
-        painter.setViewport(pageRect);
-        painter.setWindow(exportRect);
-        scribbleArea->render(&painter);
-        painter.end();
-    }
-    else
-    {
-        QRect pageRect = printer->pageRect();
-        pageRect.moveTo(0, 0);
-        exportSize.scale(pageRect.size(), Qt::KeepAspectRatio);
-        exportRect.setSize(exportSize);
-        QPainter painter(printer);
-        painter.setViewport(pageRect);
-        painter.setWindow(exportRect);
-        scribbleArea->render( &painter );
-        painter.end();
-    }
 }
 
 void Editor::getCameraLayer()

@@ -16,6 +16,7 @@ GNU General Public License for more details.
 #include <QtGui>
 #include <QHashIterator>
 #include <cmath>
+#include <QMessageBox>
 
 #include "beziercurve.h"
 #include "editor.h"
@@ -1016,7 +1017,7 @@ void ScribbleArea::paintBitmapBuffer()
     //setModified(layer, editor->currentFrame);
     ((LayerImage *)layer)->setModified(m_pEditor->m_nCurrentFrameIndex, true);
     emit modification();
-    QPixmapCache::remove("frame" + QString::number(m_pEditor->m_nCurrentFrameIndex));
+    //QPixmapCache::remove("frame" + QString::number(m_pEditor->m_nCurrentFrameIndex));
     readCanvasFromCache = false;
     updateCanvas(m_pEditor->m_nCurrentFrameIndex, rect.adjusted(-1, -1, 1, 1));
     update(rect);
@@ -1184,7 +1185,7 @@ void ScribbleArea::paintEvent(QPaintEvent *event)
 
                 for (int k = 0; k < closestCurves.size(); k++)
                 {
-                    qreal scale = myTempView.det();
+                    qreal scale = myTempView.determinant();
                     int idx = closestCurves[k];
                     if (vectorImage->curve.size() <= idx)
                     {
@@ -1297,7 +1298,7 @@ void ScribbleArea::updateCanvas(int frame, QRect rect)
     //qDebug() << "paint canvas!" << QDateTime::currentDateTime();
     // merge the different layers into the ScribbleArea
     QPainter painter(&canvas);
-    if (myTempView.det() == 1.0)
+    if (myTempView.determinant() == 1.0)
     {
         painter.setRenderHint(QPainter::SmoothPixmapTransform, false);
     }
