@@ -19,7 +19,7 @@ public:
     QRectF mySelection, myTransformedSelection, myTempTransformedSelection;
 
     virtual int type() { return UNDEFINED; }
-    virtual void restore(Editor*) { qDebug() << "Wrong"; }
+    virtual void restore(Editor*);
 };
 
 class BackupBitmapElement : public BackupElement

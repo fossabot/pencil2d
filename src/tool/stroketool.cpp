@@ -41,7 +41,6 @@ void StrokeTool::endStroke()
 
 void StrokeTool::drawStroke()
 {
-
     QPointF pixel = getCurrentPixel();
     if (pixel != lastPixel || !m_firstDraw)
     {

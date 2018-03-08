@@ -1573,6 +1573,7 @@ void ScribbleArea::drawTexturedBrush( BitmapImage *bmiSource_, QPointF srcPoint_
 
 void ScribbleArea::blurBrush( BitmapImage *bmiSource_, QPointF srcPoint_, QPointF thePoint_, qreal brushWidth_, qreal offset_, qreal opacity_ )
 {
+    qDebug() << clock() << "blurBrush";
     QRadialGradient radialGrad( thePoint_, 0.5 * brushWidth_ );
     setGaussianGradient( radialGrad, QColor( 255,255,255,127 ), opacity_, offset_ );
 
@@ -1580,14 +1581,12 @@ void ScribbleArea::blurBrush( BitmapImage *bmiSource_, QPointF srcPoint_, QPoint
     QRectF trgRect( thePoint_.x() - 0.5 * brushWidth_, thePoint_.y() - 0.5 * brushWidth_, brushWidth_, brushWidth_ );
 
     BitmapImage bmiSrcClip = bmiSource_->copy( srcRect.toRect() );
-    //BitmapImage *bmiTmpClip = new BitmapImage( NULL );
     BitmapImage bmiTmpClip = bmiSource_->copy( srcRect.toRect() );
 
     bmiTmpClip.drawRect( srcRect, Qt::NoPen, radialGrad, QPainter::CompositionMode_Source, m_antialiasing );
     bmiSrcClip.boundaries.moveTo( trgRect.topLeft().toPoint() );
     bmiTmpClip.paste( &bmiSrcClip, QPainter::CompositionMode_SourceAtop );
     bufferImg->paste( &bmiTmpClip );
-    //delete bmiTmpClip;
 }
 
 void ScribbleArea::liquifyBrush(BitmapImage *bmiSource_, QPointF srcPoint_, QPointF thePoint_, qreal brushWidth_, qreal offset_, qreal opacity_)
