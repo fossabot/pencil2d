@@ -179,7 +179,7 @@ Status FileManager::save(Object* object, QString strFileName)
 {
     QStringList debugDetails;
     debugDetails << "FileManager::save";
-    debugDetails << QString("strFileName = ").append(strFileName);
+    debugDetails << "strFileName = " << strFileName;
 
     if (object == nullptr)
     {
@@ -333,7 +333,7 @@ Status FileManager::save(Object* object, QString strFileName)
         if (!ok)
         {
             return Status(Status::ERROR_MINIZ_FAIL, debugDetails, 
-                          tr("Internal Error"),
+                          tr("MiniZ Error"),
                           tr("An internal error occurred. Your file may not be saved successfully."));
         }
         qCDebug(mLog) << "Compressed. File saved.";

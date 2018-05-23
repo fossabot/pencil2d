@@ -18,8 +18,23 @@ GNU General Public License for more details.
 #ifndef PENCILERROR_H
 #define PENCILERROR_H
 
-#include <QString>
 #include <QStringList>
+
+
+class DebugDetails
+{
+public:
+    DebugDetails();
+    DebugDetails(const DebugDetails& d);
+    ~DebugDetails() = default;
+
+    DebugDetails& operator<<(const QString& s);
+    DebugDetails& operator<<(int i);
+
+private:
+    QStringList mDetails;
+};
+
 
 class Status
 {
@@ -56,32 +71,32 @@ public:
         ERROR_NEED_AT_LEAST_ONE_CAMERA_LAYER,
     };
 
-
-    Status() {}
-    Status( ErrorCode eCode, QStringList detailsList = QStringList(), QString title = QString(), QString description = QString() );
+    Status() = default;
+    Status(ErrorCode eCode, QStringList detailsList = QStringList(), QString title = "", QString description = "");
 
     ErrorCode   code() { return mCode; }
-    bool        ok() const { return ( mCode == OK ) || ( mCode == SAFE ); }
+    bool        ok() const { return (mCode == OK) || (mCode == SAFE); }
     QString     msg();
     QString     title() { return !mTitle.isEmpty() ? mTitle : msg(); }
-    QString     description() { return mDescription; }
+    QString     description() const { return mDescription; }
     QString     details();
-    QStringList detailsList() { return mDetails; }
+    DebugDetails detailsList() const { return mDetails; }
 
-    void setTitle( QString title ) { mTitle = title; }
-    void setDescription( QString description ) { mDescription = description; }
-    void setDetailsList( QStringList detailsList ) { mDetails = detailsList; }
+    void setTitle(QString title) { mTitle = title; }
+    void setDescription(QString description) { mDescription = description; }
 
-    bool operator==( ErrorCode code ) const;
+    bool operator==(ErrorCode code) const;
 
 private:
     ErrorCode mCode = OK;
-    QString mTitle, mDescription;
-    QStringList mDetails;
+    QString mTitle;
+    QString mDescription;
+    DebugDetails mDetails;
 };
 
 #ifndef STATUS_CHECK 
 #define STATUS_CHECK( x )\
-	{ Status st = (x); if ( !st.ok() ) { return st; } }
+	{ Status st = (x); if (!st.ok()) { return st; } }
 #endif
+
 #endif // PENCILERROR_H

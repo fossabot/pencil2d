@@ -22,32 +22,32 @@ GNU General Public License for more details.
 #include "pencildef.h"
 
 Status::Status(Status::ErrorCode eCode, QStringList detailsList, QString title, QString description)
-    : mCode( eCode )
-    , mTitle( title )
-    , mDescription( description )
-    , mDetails( detailsList )
+    : mCode(eCode)
+    , mTitle(title)
+    , mDescription(description)
+    , mDetails(detailsList)
 {
 }
 
 QString Status::msg()
 {
-    static std::map<ErrorCode, QString> msgMap =
+    const static std::map<ErrorCode, QString> msgMap =
     {
         // error messages.
-        { OK,                    QObject::tr( "Everything ok." ) },
-        { FAIL,                  QObject::tr( "Ooops, Something went wrong." ) },
-        { FILE_NOT_FOUND,        QObject::tr( "File doesn't exist." ) },
-        { ERROR_FILE_CANNOT_OPEN,    QObject::tr( "Cannot open file." ) },
-        { ERROR_INVALID_XML_FILE,    QObject::tr( "The file is not a valid xml document." ) },
-        { ERROR_INVALID_PENCIL_FILE, QObject::tr( "The file is not valid pencil document." ) },
+        { OK,                    QObject::tr("Everything ok.") },
+        { FAIL,                  QObject::tr("Ooops, Something went wrong.") },
+        { FILE_NOT_FOUND,        QObject::tr("File doesn't exist.") },
+        { ERROR_FILE_CANNOT_OPEN,    QObject::tr("Cannot open file.") },
+        { ERROR_INVALID_XML_FILE,    QObject::tr("The file is not a valid xml document.") },
+        { ERROR_INVALID_PENCIL_FILE, QObject::tr("The file is not valid pencil document.") },
     };
 
-    auto it = msgMap.find( mCode );
-    if ( it == msgMap.end() )
+    auto it = msgMap.find(mCode);
+    if (it == msgMap.end())
     {
-        return msgMap[ FAIL ];
+        return msgMap[FAIL];
     }
-    return msgMap[ mCode ];
+    return msgMap[mCode];
 }
 
 QString Status::details()
@@ -79,7 +79,7 @@ QString Status::details()
     return details;
 }
 
-bool Status::operator==( Status::ErrorCode code ) const
+bool Status::operator==(Status::ErrorCode code) const
 {
-    return ( mCode == code );
+    return (mCode == code);
 }
