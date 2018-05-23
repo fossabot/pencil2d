@@ -25,13 +25,15 @@ class DebugDetails
 {
 public:
     DebugDetails();
-    DebugDetails(const DebugDetails& d);
-    ~DebugDetails() = default;
+    ~DebugDetails();
 
+    void collect(const DebugDetails& d);
+    QString str();
+    QString html();
     DebugDetails& operator<<(const QString& s);
-    DebugDetails& operator<<(int i);
 
 private:
+    void appendSystemInfo();
     QStringList mDetails;
 };
 
@@ -71,16 +73,15 @@ public:
         ERROR_NEED_AT_LEAST_ONE_CAMERA_LAYER,
     };
 
-    Status() = default;
-    Status(ErrorCode eCode, QStringList detailsList = QStringList(), QString title = "", QString description = "");
+    Status(ErrorCode code);
+    Status(ErrorCode code, const DebugDetails& detailsList, QString title = "", QString description = "");
 
     ErrorCode   code() { return mCode; }
     bool        ok() const { return (mCode == OK) || (mCode == SAFE); }
     QString     msg();
     QString     title() { return !mTitle.isEmpty() ? mTitle : msg(); }
     QString     description() const { return mDescription; }
-    QString     details();
-    DebugDetails detailsList() const { return mDetails; }
+    DebugDetails details() const { return mDetails; }
 
     void setTitle(QString title) { mTitle = title; }
     void setDescription(QString description) { mDescription = description; }

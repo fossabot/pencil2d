@@ -21,7 +21,61 @@ GNU General Public License for more details.
 #include <QSysInfo>
 #include "pencildef.h"
 
-Status::Status(Status::ErrorCode eCode, QStringList detailsList, QString title, QString description)
+DebugDetails::DebugDetails()
+{
+}
+
+DebugDetails::~DebugDetails()
+{
+}
+
+void DebugDetails::collect(const DebugDetails& d)
+{
+    for (const QString& s : d.mDetails)
+    {
+        mDetails.append("&nbsp;&nbsp;" + s);
+    }
+}
+
+QString DebugDetails::str()
+{
+    appendSystemInfo();
+    return mDetails.join("\n");
+}
+
+QString DebugDetails::html()
+{
+    appendSystemInfo();
+    return mDetails.join("<br>");
+}
+
+DebugDetails& DebugDetails::operator<<(const QString& s)
+{
+    mDetails.append(s);
+    return *this;
+}
+
+void DebugDetails::appendSystemInfo()
+{
+    if (mDetails.last() == "end")
+        return;
+
+#if QT_VERSION >= 0x050400
+    mDetails << "System Info";
+    mDetails << "Pencil version: " APP_VERSION;
+    mDetails << "Build ABI: " + QSysInfo::buildAbi();
+    mDetails << "Kernel: " + QSysInfo::kernelType() + ", " + QSysInfo::kernelVersion();
+    mDetails << "Operating System: " + QSysInfo::prettyProductName();
+    mDetails << "end";
+#endif
+}
+
+Status::Status(ErrorCode code)
+    : mCode(code)
+{
+}
+
+Status::Status(Status::ErrorCode eCode, const DebugDetails& detailsList, QString title, QString description)
     : mCode(eCode)
     , mTitle(title)
     , mDescription(description)
@@ -31,7 +85,7 @@ Status::Status(Status::ErrorCode eCode, QStringList detailsList, QString title, 
 
 QString Status::msg()
 {
-    const static std::map<ErrorCode, QString> msgMap =
+    static std::map<ErrorCode, QString> msgMap =
     {
         // error messages.
         { OK,                    QObject::tr("Everything ok.") },
@@ -48,35 +102,6 @@ QString Status::msg()
         return msgMap[FAIL];
     }
     return msgMap[mCode];
-}
-
-QString Status::details()
-{
-    QString details = mDetails.join("<br>");
-    details.append("<br><br>");
-    details.append( QString(
-                        "Error Display<br>"
-                        "Title: %1<br>"
-                        "Description: %2"
-                        ).arg( mTitle,
-                               mDescription )
-                    );
-    details.append("<br><br>");
-#if QT_VERSION >= 0x050400
-    details.append( QString(
-                        "System Info<br>"
-                        "Pencil version: %1<br>"
-                        "Build ABI: %2<br>"
-                        "Kernel: %3 %4<br>"
-                        "Product name: %5"
-                        ).arg( APP_VERSION,
-                               QSysInfo::buildAbi(),
-                               QSysInfo::kernelType(),
-                               QSysInfo::kernelVersion(),
-                               QSysInfo::prettyProductName() )
-                    );
-#endif
-    return details;
 }
 
 bool Status::operator==(Status::ErrorCode code) const
