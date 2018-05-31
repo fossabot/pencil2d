@@ -272,16 +272,18 @@ Status FileManager::save(Object* object, QString strFileName)
     int layerCount = object->getLayerCount();
     dd << QString("layerCount = %1").arg(layerCount);
 
-    bool saveLayerOK = true;
+    QStringList savedFileList;
+
+    bool saveLayersOK = true;
     for (int i = 0; i < layerCount; ++i)
     {
         Layer* layer = object->getLayer(i);
         dd << QString("layer[%1] = Layer[id=%2, name=%3, type=%4]").arg(i).arg(layer->id()).arg(layer->name()).arg(layer->type());
         
-        Status st = layer->save(strDataFolder, [this] { progressForward(); });
+        Status st = layer->save(strDataFolder, savedFileList, [this] { progressForward(); });
         if (!st.ok())
         {
-            saveLayerOK = false;
+            saveLayersOK = false;
             dd.collect(st.details());
             dd << QString("  !! Failed to save Layer[%1] %2 ").arg(i).arg(layer->name());
         }
@@ -352,7 +354,7 @@ Status FileManager::save(Object* object, QString strFileName)
 
     progressForward();
 
-    if (!saveLayerOK)
+    if (!saveLayersOK)
     {
         return Status(Status::FAIL, dd,
                       tr("Internal Error"),

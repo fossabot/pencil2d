@@ -42,7 +42,7 @@ public:
     Status  save(Object*, QString strFileName);
 
     QList<ColourRef> loadPaletteFile(QString strFilename);
-    Status error() { return mError; }
+    Status error() const { return mError; }
     Status verifyObject(Object* obj);
 
 Q_SIGNALS:

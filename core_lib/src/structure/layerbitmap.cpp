@@ -61,7 +61,6 @@ Status LayerBitmap::saveKeyFrameFile(KeyFrame* keyframe, QString path)
     {
         return Status::SAFE;
     }
-    //qDebug() << "write: " << strFilePath;
 
     BitmapImage* bitmapImage = static_cast<BitmapImage*>(keyframe);
     Status st = bitmapImage->writeFile(strFilePath);
@@ -70,7 +69,6 @@ Status LayerBitmap::saveKeyFrameFile(KeyFrame* keyframe, QString path)
         DebugDetails debugInfo;
         debugInfo << "LayerBitmap::saveKeyFrame";
         debugInfo << QString("  KeyFrame.pos() = %1").arg(keyframe->pos());
-        debugInfo << QString("  path = %1").arg(path);
         debugInfo << QString("  strFilePath = %1").arg(strFilePath);
         debugInfo << QString("BitmapImage could not be saved");
         return Status(Status::FAIL, debugInfo);

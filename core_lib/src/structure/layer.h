@@ -64,7 +64,7 @@ public:
     bool visible() const { return mVisible; }
     void setVisible(bool b) { mVisible = b; }
 
-    virtual Status saveKeyFrameFile(KeyFrame*, QString dataPath) = 0;
+    virtual Status saveKeyFrameFile(KeyFrame*, QString dataPath, QString& ) = 0;
     virtual void loadDomElement(QDomElement element, QString dataDirPath, ProgressCallback progressForward) = 0;
     virtual QDomElement createDomElement(QDomDocument& doc) = 0;
 
@@ -107,7 +107,7 @@ public:
 
     bool moveSelectedFrames(int offset);
 
-    Status save(QString dataFolder, ProgressCallback progressStep);
+    Status save(const QString& sDataFolder, QStringList& savedFiles, ProgressCallback progressStep);
 
     // graphic representation -- could be put in another class
     void paintTrack(QPainter& painter, TimeLineCells* cells, int x, int y, int width, int height, bool selected, int frameSize);

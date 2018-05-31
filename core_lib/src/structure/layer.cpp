@@ -277,18 +277,17 @@ bool Layer::loadKey(KeyFrame* pKey)
     return true;
 }
 
-Status Layer::save(QString strDataFolder, ProgressCallback progressStep)
+Status Layer::save(const QString& sDataFolder, QStringList& savedFiles, ProgressCallback progressStep)
 {
     DebugDetails dd;
-    dd << "Layer::save";
-    dd << ("strDataFolder = " + strDataFolder);
+    dd << __FUNCTION__;
 
     bool isOkay = true;
 
     for (auto pair : mKeyFrames)
     {
         KeyFrame* pKeyFrame = pair.second;
-        Status st = saveKeyFrameFile(pKeyFrame, strDataFolder);
+        Status st = saveKeyFrameFile(pKeyFrame, sDataFolder);
         if (!st.ok())
         {
             isOkay = false;
