@@ -291,6 +291,7 @@ Status FileManager::save(Object* object, QString strFileName)
     dd << "All Layers saved";
 
     // save palette
+    // TODO: add to file list
     bool bPaletteOK = object->savePalette(strDataFolder);
     if (!bPaletteOK)
     {
@@ -332,6 +333,8 @@ Status FileManager::save(Object* object, QString strFileName)
     file.close();
 
     dd << "Done writing main xml file";
+
+    attachedFiles.append(strMainXMLFile);
 
     progressForward();
 

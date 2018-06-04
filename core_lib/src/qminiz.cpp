@@ -49,8 +49,8 @@ Status MiniZ::compressFolder(QString zipFilePath, QString srcFolderPath, const Q
         srcFolderPath.append("/");
     }
 
-    srcFolderPath = QDir::toNativeSeparators(srcFolderPath);
-    zipFilePath = QDir::toNativeSeparators(zipFilePath);
+    //srcFolderPath = QDir::toNativeSeparators(srcFolderPath);
+    //zipFilePath = QDir::toNativeSeparators(zipFilePath);
 
     mz_zip_archive* mz = new mz_zip_archive;
     OnScopeExit(delete mz);
@@ -63,7 +63,8 @@ Status MiniZ::compressFolder(QString zipFilePath, QString srcFolderPath, const Q
         dd << "Miniz writer init failed.";
     }
 
-    for (const QString& filePath : fileList)
+    qDebug() << "SrcFolder=" << srcFolderPath;
+    for (QString filePath : fileList)
     {
         QString sRelativePath = filePath;
         sRelativePath.replace(srcFolderPath, "");
@@ -74,7 +75,7 @@ Status MiniZ::compressFolder(QString zipFilePath, QString srcFolderPath, const Q
                                     sRelativePath.toUtf8().data(),
                                     filePath.toUtf8().data(),
                                     "", 0, MZ_DEFAULT_COMPRESSION);
-        qDebug() << "Zip" << filePath;
+        qDebug() << "Zip: " << filePath;
         if (!ok)
         {
             dd << QString("  Cannot add %1 to zip").arg(sRelativePath);
