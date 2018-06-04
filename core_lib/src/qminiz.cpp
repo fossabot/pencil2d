@@ -63,38 +63,31 @@ Status MiniZ::compressFolder(QString zipFilePath, QString srcFolderPath, const Q
         dd << "Miniz writer init failed.";
     }
 
-    QDirIterator it(srcFolderPath, QDirIterator::Subdirectories);
-    while (it.hasNext())
+    for (const QString& filePath : fileList)
     {
-        QString sFullPath = it.next();
-
-        if (it.fileInfo().isDir())
-        {
-            continue;
-        }
-
-        QString sRelativePath = sFullPath;
+        QString sRelativePath = filePath;
         sRelativePath.replace(srcFolderPath, "");
 
         dd << QString("Add file to zip: ").append(sRelativePath);
 
         ok = mz_zip_writer_add_file(mz,
                                     sRelativePath.toUtf8().data(),
-                                    sFullPath.toUtf8().data(),
+                                    filePath.toUtf8().data(),
                                     "", 0, MZ_DEFAULT_COMPRESSION);
+        qDebug() << "Zip" << filePath;
         if (!ok)
         {
             dd << QString("  Cannot add %1 to zip").arg(sRelativePath);
         }
     }
     ok &= mz_zip_writer_finalize_archive(mz);
+    mz_zip_writer_end(mz);
+
     if (!ok)
     {
         dd << "Miniz finalize archive failed";
+        return Status(Status::FAIL, dd);
     }
-
-    mz_zip_writer_end(mz);
-
     return Status::OK;
 }
 
