@@ -224,8 +224,8 @@ Status FileManager::save(Object* object, QString strFileName)
     QString strMainXMLFile;
     QString strDataFolder;
 
-    bool isOldFile = strFileName.endsWith(PFF_OLD_EXTENSION);
-    if (isOldFile)
+    bool isOldType = strFileName.endsWith(PFF_OLD_EXTENSION);
+    if (isOldType)
     {
         qCDebug(mLog) << "Old Pencil File Format (*.pcl) !";
 
@@ -269,10 +269,10 @@ Status FileManager::save(Object* object, QString strFileName)
     }
 
     // save data
-    int layerCount = object->getLayerCount();
+    const int layerCount = object->getLayerCount();
     dd << QString("layerCount = %1").arg(layerCount);
 
-    QStringList savedFileList;
+    QStringList attachedFiles;
 
     bool saveLayersOK = true;
     for (int i = 0; i < layerCount; ++i)
@@ -280,7 +280,7 @@ Status FileManager::save(Object* object, QString strFileName)
         Layer* layer = object->getLayer(i);
         dd << QString("layer[%1] = Layer[id=%2, name=%3, type=%4]").arg(i).arg(layer->id()).arg(layer->name()).arg(layer->type());
         
-        Status st = layer->save(strDataFolder, savedFileList, [this] { progressForward(); });
+        Status st = layer->save(strDataFolder, attachedFiles, [this] { progressForward(); });
         if (!st.ok())
         {
             saveLayersOK = false;
@@ -303,7 +303,7 @@ Status FileManager::save(Object* object, QString strFileName)
     QFile file(strMainXMLFile);
     if (!file.open(QFile::WriteOnly | QFile::Text))
     {
-        return Status::ERROR_FILE_CANNOT_OPEN;
+        return Status(Status::ERROR_FILE_CANNOT_OPEN, dd);
     }
 
     QDomDocument xmlDoc("PencilDocument");
@@ -315,8 +315,8 @@ Status FileManager::save(Object* object, QString strFileName)
     progressForward();
 
     // save editor information
-    QDomElement projectDataElement = saveProjectData(object->data(), xmlDoc);
-    root.appendChild(projectDataElement);
+    QDomElement projDataXml = saveProjectData(object->data(), xmlDoc);
+    root.appendChild(projDataXml);
 
     // save object
     QDomElement objectElement = object->saveXML(xmlDoc);
@@ -335,10 +335,10 @@ Status FileManager::save(Object* object, QString strFileName)
 
     progressForward();
 
-    if (!isOldFile)
+    if (!isOldType)
     {
         dd << "Miniz";
-        Status s = MiniZ::compressFolder(strFileName, strTempWorkingFolder);
+        Status s = MiniZ::compressFolder(strFileName, strTempWorkingFolder, attachedFiles);
         if (!s.ok())
         {
             dd.collect(s.details());
