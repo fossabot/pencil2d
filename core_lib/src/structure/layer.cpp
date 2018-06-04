@@ -277,27 +277,30 @@ bool Layer::loadKey(KeyFrame* pKey)
     return true;
 }
 
-Status Layer::save(const QString& sDataFolder, QStringList& savedFiles, ProgressCallback progressStep)
+Status Layer::save(const QString& sDataFolder, QStringList& attachedFiles, ProgressCallback progressStep)
 {
     DebugDetails dd;
     dd << __FUNCTION__;
 
-    bool isOkay = true;
+    bool ok = true;
 
     for (auto pair : mKeyFrames)
     {
-        KeyFrame* pKeyFrame = pair.second;
-        Status st = saveKeyFrameFile(pKeyFrame, sDataFolder);
-        if (!st.ok())
+        KeyFrame* keyFrame = pair.second;
+        Status st = saveKeyFrameFile(keyFrame, sDataFolder);
+        if (st.ok())
         {
-            isOkay = false;
-
+            attachedFiles.append(keyFrame->fileName());
+        }
+        else
+        {
+            ok = false;
             dd.collect(st.details());
-            dd << QString("- Keyframe[%1] failed to save").arg(pKeyFrame->pos()); // << keyFrameDetails;
+            dd << QString("- Keyframe[%1] failed to save").arg(keyFrame->pos()); // << keyFrameDetails;
         }
         progressStep();
     }
-    if (!isOkay)
+    if (!ok)
     {
         return Status(Status::FAIL, dd);
     }
@@ -440,7 +443,7 @@ void Layer::setModified(int position, bool modified)
     }
 }
 
-bool Layer::isFrameSelected(int position)
+bool Layer::isFrameSelected(int position) const
 {
     KeyFrame* keyFrame = getKeyFrameWhichCovers(position);
     if (keyFrame)
@@ -635,20 +638,9 @@ bool Layer::moveSelectedFrames(int offset)
     return false;
 }
 
-bool Layer::isPaintable()
+bool Layer::isPaintable() const
 {
-    switch (type())
-    {
-    case BITMAP:
-    case VECTOR:
-        return true;
-    case CAMERA:
-    case SOUND:
-        return false;
-    default:
-        break;
-    }
-    return false;
+    return (type() == BITMAP || type() == VECTOR);
 }
 
 bool Layer::keyExistsWhichCovers(int frameNumber)
@@ -656,7 +648,7 @@ bool Layer::keyExistsWhichCovers(int frameNumber)
     return getKeyFrameWhichCovers(frameNumber) != nullptr;
 }
 
-KeyFrame* Layer::getKeyFrameWhichCovers(int frameNumber)
+KeyFrame* Layer::getKeyFrameWhichCovers(int frameNumber) const
 {
     auto keyFrame = getLastKeyFrameAtPosition(frameNumber);
     if (keyFrame != nullptr)
