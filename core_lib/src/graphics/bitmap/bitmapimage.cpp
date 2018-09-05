@@ -89,6 +89,7 @@ BitmapImage* BitmapImage::clone()
 
 void BitmapImage::loadFile()
 {
+    std::lock_guard<std::mutex> lock(mMutex);
     if (mImage == nullptr)
     {
         mImage = std::make_shared<QImage>(fileName());
@@ -99,6 +100,7 @@ void BitmapImage::loadFile()
 
 void BitmapImage::unloadFile()
 {
+    std::lock_guard<std::mutex> lock(mMutex);
     if (isModified() == false)
     {
         mImage.reset();

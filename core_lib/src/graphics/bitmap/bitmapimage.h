@@ -18,6 +18,7 @@ GNU General Public License for more details.
 #define BITMAP_IMAGE_H
 
 #include <memory>
+#include <mutex>
 #include <QPainter>
 #include "keyframe.h"
 
@@ -125,6 +126,8 @@ private:
     /** @see isMinimallyBounded() */
     bool mMinBound = true;
     bool mEnableAutoCrop = false;
+
+    std::mutex mMutex;
 };
 
 #endif

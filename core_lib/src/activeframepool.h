@@ -19,6 +19,7 @@ GNU General Public License for more details.
 #define ACTIVEFRAMEPOOL_H
 
 #include <list>
+#include <mutex>
 #include <unordered_map>
 #include "keyframe.h"
 
@@ -32,6 +33,7 @@ class ActiveFramePool : public KeyFrameEventListener
 {
 public:
     explicit ActiveFramePool(int maxSize);
+    ~ActiveFramePool();
 
     void put(KeyFrame* key);
     size_t size() const;
@@ -48,6 +50,9 @@ private:
     std::list<KeyFrame*> mCacheFramesList;
     std::unordered_map<KeyFrame*, list_iterator_t> mCacheFramesMap;
     size_t mMaxSize = 200;
+
+    std::mutex mMutex;
+    std::thread mBackgroundWorker;
 };
 
 #endif // ACTIVEFRAMEPOOL_H

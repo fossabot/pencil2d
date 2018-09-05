@@ -24,6 +24,19 @@ ActiveFramePool::ActiveFramePool(int maxSize)
 {
     Q_ASSERT(maxSize > 10);
     mMaxSize = maxSize;
+
+    mBackgroundWorker = std::move(std::thread([this]
+    {
+        while(true)
+        {
+            std::unique_lock<std::mutex> lock(mMutex);
+        }
+    }));
+}
+
+ActiveFramePool::~ActiveFramePool()
+{
+
 }
 
 void ActiveFramePool::put(KeyFrame* key)
@@ -32,6 +45,10 @@ void ActiveFramePool::put(KeyFrame* key)
         return;
 
     Q_ASSERT(key->pos() > 0);
+
+    std::lock_guard<std::mutex> lock(mMutex);
+
+    key->loadFile();
 
     auto it = mCacheFramesMap.find(key);
     mCacheFramesList.push_front(key);
@@ -65,6 +82,8 @@ size_t ActiveFramePool::size() const
 
 void ActiveFramePool::clear()
 {
+    std::lock_guard<std::mutex> lock(mMutex);
+
     for (KeyFrame* key : mCacheFramesList)
     {
         key->removeEventListner(this);
@@ -81,6 +100,8 @@ bool ActiveFramePool::isFrameInPool(KeyFrame* key)
 
 void ActiveFramePool::onKeyFrameDestroy(KeyFrame* key)
 {
+    std::lock_guard<std::mutex> lock(mMutex);
+
     auto it = mCacheFramesMap.find(key);
     if (it != mCacheFramesMap.end())
     {
