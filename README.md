@@ -1,6 +1,6 @@
-
 [![Build Status](https://travis-ci.org/pencil2d/pencil.svg?branch=master)](https://travis-ci.org/pencil2d/pencil)
 [![Build status](https://ci.appveyor.com/api/projects/status/65p3ccmohnkmim4x?svg=true)](https://ci.appveyor.com/project/chchwy/pencil2d)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fchchwy%2Fpencil2d.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fchchwy%2Fpencil2d?ref=badge_shield)
 
 # Pencil2D Animation
 
@@ -47,3 +47,7 @@ The link will direct you to Google Drive, please right-click a file and select D
 * Github: [https://github.com/pencil2d/pencil](https://github.com/pencil2d/pencil)
 * Bitbucket: [https://bitbucket.org/chchwy/pencil2d](https://bitbucket.org/chchwy/pencil2d) (Mirror)
 
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fchchwy%2Fpencil2d.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fchchwy%2Fpencil2d?ref=badge_large)
